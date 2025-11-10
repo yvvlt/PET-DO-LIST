@@ -27,6 +27,8 @@ LEVEL_UP_EXP_REQUIREMENTS = {
 }
 MAX_PET_LEVEL = 7 # 펫이 도달할 수 있는 최대 레벨
 
+DEFAULT_LEVEL_UP_EXP = 50
+
 # --- [3] 간식 관련 설정 ---
 SNACK_EFFECTS = { # 간식 아이템이 펫에게 주는 효과
     "기본 간식": {"happiness": 10, "fullness": 20, "icon": "basic_snack_icon.png"},
