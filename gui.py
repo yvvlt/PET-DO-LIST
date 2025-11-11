@@ -191,6 +191,7 @@ class PetDoListGUI:
         self.current_date_label.config(text=current_display_date.strftime("%Y년 %m월 %d일"))
         
         # --- 3. 투두리스트 업데이트 ---
+    
         self.todo_listbox.delete(0, tk.END) 
         todos = self.app_logic.todo_manager.get_current_date_todos() 
         for i, todo in enumerate(todos):
@@ -210,7 +211,7 @@ class PetDoListGUI:
         if not snack_text:
             snack_text = "보유 간식이 없습니다."
         self.snack_list_label.config(text=snack_text)
-        
+
     # --- GUI 이벤트 핸들러 (main.py의 app_logic과 연결) ---
     def add_todo_from_entry(self):
         todo_text = self.todo_entry.get()
