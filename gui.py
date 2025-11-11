@@ -4,6 +4,7 @@
 
 import tkinter as tk
 from tkinter import ttk # ttk는 더 세련된 위젯을 제공합니다.
+from tkinter import messagebox 
 from PIL import Image, ImageTk # 이미지 처리를 위해 Pillow 라이브러리 필요 (pip install Pillow)
 import os # 파일 경로 처리를 위해 추가
 
