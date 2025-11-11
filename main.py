@@ -32,7 +32,7 @@ class PetDoListApp:
         # PetDoListGUI에 self(PetDoListApp 인스턴스)를 전달하여 GUI가 앱 로직에 접근할 수 있도록 합니다.
         self.gui = PetDoListGUI(master, self) 
 
-        # --- 초기 GUI 상태 업데이트 --- 
+        # --- 초기 GUI 상태 업데이트 ---
         self.gui.update_gui_with_pet_data() # GUI가 생성된 후 바로 최신 데이터로 업데이트
 
 
