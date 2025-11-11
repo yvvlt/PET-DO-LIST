@@ -12,6 +12,7 @@ from todo_manager import TodoManager
 import data_manager
 from gui import PetDoListGUI # <-- gui.py에서 PetDoListGUI 클래스를 임포트합니다!
 
+
 class PetDoListApp:
     def __init__(self, master):
         self.master = master
