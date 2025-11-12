@@ -57,7 +57,7 @@ RESOURCES_PATH = "resources/" # 이미지, 아이콘 등 리소스 폴더의 기
 # --- [6] Tkinter GUI 기본 설정 ---
 APP_TITLE = "Pet-Do-List: 환생 펫 투두리스트"
 WINDOW_WIDTH = 1000 # 창 너비
-WINDOW_HEIGHT = 700 # 창 높이
+WINDOW_HEIGHT = 800 # 창 높이
 BG_COLOR = "#e0e0e0" # 배경 색상 (밝은 회색)
 PRIMARY_COLOR = "#6a0dad" # 주요 색상 (보라색)
 ACCENT_COLOR = "#ff6f61" # 강조 색상 (주황색)
