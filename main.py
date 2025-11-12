@@ -11,7 +11,7 @@ import config
 from pet_manager import Pet
 from todo_manager import TodoManager
 import data_manager
-from gui import PetDoListGUI 
+from gui import PetDoListGUI # gui.py에서 PetDoListGUI를 임포트합니다!
 
 class PetDoListApp:
     def __init__(self, master):
@@ -37,7 +37,7 @@ class PetDoListApp:
 
     def _pre_gui_setup(self):
         """GUI를 생성하기 전에 데이터 로드, 펫 초기화, 환생 체크를 수행합니다."""
-        loaded_pet, loaded_daily_todos, loaded_snack_counts = data_manager.load_data() # daily_todos 로드
+        loaded_pet, loaded_daily_todos, loaded_snack_counts = data_manager.load_data() 
 
         if loaded_pet and loaded_daily_todos is not None and loaded_snack_counts:
             # 저장된 데이터가 있을 경우 로드
@@ -47,7 +47,7 @@ class PetDoListApp:
         else:
             # 저장된 데이터가 없거나 유효하지 않을 경우 새로 생성
             print("새로운 데이터를 초기화합니다.")
-            self.create_initial_pet_and_data_via_dialog() # GUI 팝업으로 사용자 입력 받기
+            self.create_initial_pet_and_data_via_dialog() 
 
         # 펫이 로드되거나 새로 생성된 후, 주간 환생 체크
         self.check_weekly_reset()
@@ -60,20 +60,17 @@ class PetDoListApp:
         if not pet_name or pet_name.strip() == "":
             pet_name = config.INITIAL_PET_NAME 
         
-        # 2. 펫 종류 선택 받기 (옵션 목록 제공)
-        species_options = config.PET_SPECIES_LIST
-        species_msg = "환영합니다! 어떤 종류의 펫을 키우시겠어요?\n" + ", ".join(species_options) + "\n\n(입력하지 않으면 '사람' 펫으로 시작합니다)"
-        
-        selected_species_raw = simpledialog.askstring("펫 종류 선택", species_msg, parent=self.master)
+        # 2. 펫 종류 선택 받기 (버튼으로 선택하도록 변경)
+        # self.gui.show_pet_species_selection 메서드를 호출합니다.
+        selected_species = self.gui.show_pet_species_selection(config.PET_SPECIES_LIST, "새 펫 종류 선택")
 
-        if selected_species_raw and selected_species_raw.strip() in species_options:
-            selected_species = selected_species_raw.strip()
-        else:
-            selected_species = species_options[0] 
-            messagebox.showinfo("알림", f"선택이 유효하지 않아 '{selected_species}' 펫으로 시작합니다.", parent=self.master)
+        if selected_species is None: # 사용자가 팝업을 닫았거나 선택하지 않은 경우
+            selected_species = config.PET_SPECIES_LIST[0] # 기본값으로 첫 번째 종 사용
+            messagebox.showinfo("알림", f"펫 종류를 선택하지 않아 '{selected_species}' 펫으로 시작합니다.", parent=self.master)
+
 
         self.pet = Pet(name=pet_name, species=selected_species)
-        self.todo_manager = TodoManager() # <-- initial_daily_todos 없이 호출 (기본값인 빈 딕셔너리로 초기화)
+        self.todo_manager = TodoManager() 
         messagebox.showinfo("펫 생성", f"'{self.pet.name}' ({self.pet.species}) 펫과 함께 Pet-Do-List를 시작합니다!", parent=self.master)
         print(f"새로운 펫 '{self.pet.name}' ({self.pet.species}) 생성 완료!")
 
@@ -103,20 +100,17 @@ class PetDoListApp:
         if not new_pet_name or new_pet_name.strip() == "":
             new_pet_name = config.INITIAL_PET_NAME 
         
-        # 새 펫 종류 선택
-        species_options = config.PET_SPECIES_LIST
-        new_species_msg = f"어떤 종류의 펫으로 다시 태어날까요?\n" + ", ".join(species_options) + "\n\n(입력하지 않으면 '{species_options[0]}' 펫으로 시작합니다)"
-        selected_new_species_raw = simpledialog.askstring("새 펫 종류 선택", new_species_msg, parent=self.master)
+        # 새 펫 종류 선택 (버튼으로 선택하도록 변경)
+        # self.gui.show_pet_species_selection 메서드를 호출합니다.
+        selected_new_species = self.gui.show_pet_species_selection(config.PET_SPECIES_LIST, "새로운 펫 종류 선택")
 
-        if selected_new_species_raw and selected_new_species_raw.strip() in species_options:
-            selected_new_species = selected_new_species_raw.strip()
-        else:
-            selected_new_species = species_options[0] 
-            messagebox.showinfo("알림", f"선택이 유효하지 않아 '{selected_new_species}' 펫으로 다시 태어납니다.", parent=self.master)
+        if selected_new_species is None: # 사용자가 팝업을 닫았거나 선택하지 않은 경우
+            selected_new_species = config.PET_SPECIES_LIST[0] # 기본값으로 첫 번째 종 사용
+            messagebox.showinfo("알림", f"펫 종류를 선택하지 않아 '{selected_new_species}' 펫으로 다시 태어납니다.", parent=self.master)
             
         self.pet.name = new_pet_name 
         self.pet.reset_for_rebirth(new_species=selected_new_species) 
-        self.todo_manager = TodoManager() # 할 일 목록과 간식은 초기화 (새로운 시작!)
+        self.todo_manager = TodoManager() 
         messagebox.showinfo("펫 환생 완료!", f"'{self.pet.name}' ({self.pet.species})으로 새롭게 태어났습니다! 환영해주세요!", parent=self.master)
         self.gui.update_gui_with_pet_data() 
         self.save_all_data()
@@ -129,11 +123,10 @@ class PetDoListApp:
     def save_all_data(self):
         """현재 모든 데이터를 저장합니다."""
         if self.pet and self.todo_manager:
-            # save_data 함수에 daily_todos 데이터를 전달합니다.
             data_manager.save_data(self.pet, self.todo_manager.get_daily_todos_data(), self.todo_manager.get_current_snack_counts())
             print("애플리케이션 종료 전 데이터 저장 완료.")
         else:
-            print("저장할 데이터가 없어 저장을 건너뜝니다.")
+            print("저장할 데이터가 없어 저장을 건너뜁니다.")
 
     # --- GUI 이벤트 핸들러 (PetDoListGUI에서 호출될 실제 로직) ---
     def add_todo_logic(self, todo_text):
@@ -144,8 +137,8 @@ class PetDoListApp:
         return False
 
     def complete_todo_logic(self, index):
-        if 0 <= index < len(self.todo_manager.get_current_date_todos()): # get_current_date_todos로 변경
-            if self.todo_manager.get_current_date_todos()[index]['completed']: # get_current_date_todos로 변경
+        if 0 <= index < len(self.todo_manager.get_current_date_todos()): 
+            if self.todo_manager.get_current_date_todos()[index]['completed']: 
                 messagebox.showinfo("알림", "이미 완료된 할 일입니다.", parent=self.master)
                 return False
 
@@ -159,7 +152,7 @@ class PetDoListApp:
         return False
             
     def remove_todo_logic(self, index):
-        if 0 <= index < len(self.todo_manager.get_current_date_todos()): # get_current_date_todos로 변경
+        if 0 <= index < len(self.todo_manager.get_current_date_todos()): 
             if messagebox.askyesno("삭제 확인", "선택된 할 일을 삭제하시겠습니까?", parent=self.master):
                 self.todo_manager.remove_todo(index)
                 self.gui.update_gui_with_pet_data()
@@ -178,7 +171,6 @@ class PetDoListApp:
             messagebox.showinfo("알림", f"'{snack_name}' 간식이 없거나 부족합니다.", parent=self.master)
             return False
 
-    # --- 날짜 변경 기능 추가 ---
     def change_date_logic(self, delta_days):
         """
         현재 표시되는 할 일의 날짜를 변경합니다.
@@ -188,7 +180,7 @@ class PetDoListApp:
         current_display_date = self.todo_manager.get_current_date()
         new_display_date = current_display_date + datetime.timedelta(days=delta_days)
         self.todo_manager.set_current_date(new_display_date)
-        self.gui.update_gui_with_pet_data() # GUI 업데이트
+        self.gui.update_gui_with_pet_data() 
         print(f"날짜 변경: {current_display_date} -> {new_display_date}")
 
 

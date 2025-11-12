@@ -1,14 +1,71 @@
-# Tkinter GUI 관련 코드 (위젯 생성, 레이아웃 관리)
-# gui.py
+# gui.py 파일 열어서 아래 코드로 완전히 덮어씌우고 저장해주세요!
 
 import tkinter as tk
 from tkinter import ttk 
 from tkinter import messagebox 
 from PIL import Image, ImageTk 
 import os 
-import datetime # 날짜 형식을 지정하기 위해 추가
+import datetime 
 
 import config 
+
+# === 펫 종류 선택 모달 다이얼로그 클래스 추가 시작 ===
+class PetSpeciesSelectionDialog(tk.Toplevel):
+    def __init__(self, parent, species_list, title="펫 종류 선택"):
+        super().__init__(parent)
+        self.transient(parent) # 부모 윈도우 아래에 위치
+        self.grab_set()        # 이 창이 활성화되면 다른 윈도우는 상호작용 불가능 (모달)
+        self.title(title)
+        self.result = None     # 선택된 펫 종류를 저장할 변수
+
+        self.protocol("WM_DELETE_WINDOW", self._on_closing) # 닫기 버튼 처리
+
+        # 중앙에 위치시키기
+        self.update_idletasks() # 위젯이 그려지기 전이라 width/height가 0일 수 있으므로 호출
+        # 현재 화면 크기 대비 다이얼로그 크기 추정치 (대략 200x(버튼수*40))
+        # 정확한 중앙 배치를 위해 팝업 크기를 알기 위해 잠시 geometry를 설정했다가 다시 재조정하는 방법도 있으나,
+        # 일단은 부모 윈도우 중앙에 근접하도록만 설정
+        
+        # 작은 창 크기를 기준으로 설정
+        dialog_width = 300
+        dialog_height = 150 + (len(species_list) * 50) # 대략적인 높이 계산
+
+        parent_x = parent.winfo_x()
+        parent_y = parent.winfo_y()
+        parent_width = parent.winfo_width()
+        parent_height = parent.winfo_height()
+
+        x = parent_x + (parent_width // 2) - (dialog_width // 2)
+        y = parent_y + (parent_height // 2) - (dialog_height // 2)
+        
+        # 팝업의 위치와 대략적인 크기 설정 (geometry에 wxh+x+y 순서)
+        self.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
+        self.resizable(False, False) # 사이즈 조절 방지
+
+
+        tk.Label(self, text="어떤 종류의 펫을 키우시겠어요?", font=("Arial", 14, "bold"), pady=10).pack()
+
+        button_frame = tk.Frame(self)
+        button_frame.pack(pady=10)
+
+        for species in species_list:
+            btn = tk.Button(button_frame, text=species, width=15, height=2,
+                            command=lambda s=species: self._on_select(s),
+                            font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
+            btn.pack(side=tk.LEFT, padx=5, pady=5)
+            
+        self.wait_window(self) # 이 창이 닫힐 때까지 부모 윈도우를 일시 정지
+
+    def _on_select(self, species):
+        self.result = species
+        self.destroy() # 창 닫기
+
+    def _on_closing(self):
+        self.result = None # 선택 없이 닫았을 경우 결과값 None
+        self.destroy()
+        
+# === 펫 종류 선택 모달 다이얼로그 클래스 추가 끝 ===
+
 
 class PetDoListGUI:
     def __init__(self, master, app_logic):
@@ -46,7 +103,6 @@ class PetDoListGUI:
         self.snack_button = tk.Button(self.left_panel, text="간식 주기 (기본)", command=lambda: self.app_logic.give_snack_to_pet("기본 간식"), font=("Arial", 12, "bold"), bg=config.ACCENT_COLOR, fg="white")
         self.snack_premium_button = tk.Button(self.left_panel, text="간식 주기 (고급)", command=lambda: self.app_logic.give_snack_to_pet("고급 간식"), font=("Arial", 12, "bold"), bg=config.ACCENT_COLOR, fg="white")
         
-        # ✨ 여기에 '강제 환생 버튼' 생성 코드가 있습니다! ✨
         self.rebirth_button = tk.Button(self.left_panel, text="강제 환생 (테스트)", command=self.app_logic.perform_rebirth_via_dialog, font=("Arial", 10), bg="lightgray")
 
 
@@ -92,8 +148,6 @@ class PetDoListGUI:
         
         self.snack_button.pack(pady=(15, 5), ipadx=20, ipady=10)
         self.snack_premium_button.pack(pady=(5, 15), ipadx=20, ipady=10)
-        
-        # ✨ 여기에 '강제 환생 버튼' 배치 코드가 있습니다! ✨
         self.rebirth_button.pack(pady=(5, 15), ipadx=20, ipady=10)
 
 
@@ -128,15 +182,14 @@ class PetDoListGUI:
         
         if image_path_key not in self.pet_image_cache:
             try:
-                full_path = os.path.join(config.RESOURCES_PATH, image_filename)
+                full_path = os.path.join(config.RESOURCES_PATH, config.PET_IMAGES_SUBFOLDER, image_filename)
+                print(f"DEBUG: 이미지 로드 시도 경로: {full_path}") #디버깅용 출력
                 original_image = Image.open(full_path)
                 resized_image = original_image.resize(size, Image.Resampling.LANCZOS)
                 self.pet_image_cache[image_path_key] = ImageTk.PhotoImage(resized_image)
             except FileNotFoundError:
                 print(f"이미지 파일 '{full_path}'을 찾을 수 없습니다.")
-                # 에러 이미지 캐싱 (한번만 로드)
                 if 'error_image' not in self.pet_image_cache:
-                    # 'resources' 폴더 안에 'no_image.png' 파일을 미리 만들어두세요.
                     error_image_path = os.path.join(config.RESOURCES_PATH, "no_image.png") 
                     try:
                         error_img_orig = Image.open(error_image_path)
@@ -144,7 +197,6 @@ class PetDoListGUI:
                         self.pet_image_cache['error_image'] = ImageTk.PhotoImage(error_img_resized)
                     except FileNotFoundError:
                         print(f"기본 에러 이미지 파일 '{error_image_path}'도 찾을 수 없습니다. 빈 이미지로 처리합니다.")
-                        # 빈 이미지 캐싱
                         empty_img = Image.new('RGBA', size, (0, 0, 0, 0)) # 투명 이미지
                         self.pet_image_cache['error_image'] = ImageTk.PhotoImage(empty_img)
                     except Exception as e:
@@ -173,7 +225,7 @@ class PetDoListGUI:
                 self.pet_photo_label.config(image=pet_image)
                 self.pet_photo_label.image = pet_image 
             else:
-                self.pet_photo_label.config(image='') # 이미지 없으면 제거
+                self.pet_photo_label.config(image='') 
 
             self.happiness_bar['value'] = pet.happiness
             self.happiness_bar['maximum'] = pet.max_happiness
@@ -191,7 +243,6 @@ class PetDoListGUI:
         self.current_date_label.config(text=current_display_date.strftime("%Y년 %m월 %d일"))
         
         # --- 3. 투두리스트 업데이트 ---
-    
         self.todo_listbox.delete(0, tk.END) 
         todos = self.app_logic.todo_manager.get_current_date_todos() 
         for i, todo in enumerate(todos):
@@ -211,7 +262,7 @@ class PetDoListGUI:
         if not snack_text:
             snack_text = "보유 간식이 없습니다."
         self.snack_list_label.config(text=snack_text)
-
+        
     # --- GUI 이벤트 핸들러 (main.py의 app_logic과 연결) ---
     def add_todo_from_entry(self):
         todo_text = self.todo_entry.get()
@@ -236,3 +287,15 @@ class PetDoListGUI:
                 self.app_logic.remove_todo_logic(index) 
         else:
             messagebox.showinfo("선택 오류", "삭제할 할 일을 선택해주세요.", parent=self.master)
+
+    # === PetDoListGUI에 새로운 메서드 추가 시작 ===
+    # 👇 이 메서드가 PetDoListGUI 클래스 안에! 그리고 가장 마지막 부분에 잘 들어가야 합니다.
+    def show_pet_species_selection(self, species_list, dialog_title="펫 종류 선택"):
+        """
+        펫 종류를 버튼으로 선택하는 모달 다이얼로그를 표시합니다.
+        Returns:
+            str: 선택된 펫 종류 (사용자가 닫거나 선택하지 않으면 None).
+        """
+        dialog = PetSpeciesSelectionDialog(self.master, species_list, dialog_title)
+        return dialog.result
+    # === PetDoListGUI에 새로운 메서드 추가 끝 ===
