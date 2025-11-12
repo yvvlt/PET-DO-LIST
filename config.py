@@ -10,6 +10,10 @@ INITIAL_PET_NAME = "새 친구" # 펫 이름 미입력 시 기본값
 # --- [2] 펫 성장 관련 설정 ---
 PET_SPECIES_LIST = ["사람", "나무", "고양이"] # 선택 가능한 펫 종류
 MAX_PET_LEVEL = 7 # 펫의 최대 레벨
+
+INITIAL_PET_LEVEL = 1
+INITIAL_PET_EXP = 0
+
 EXP_PER_TODO_COMPLETE = 10 # 할 일 하나 완료 시 획득 경험치
 EXP_REQUIRED_FOR_LEVEL_UP = { # 레벨업에 필요한 경험치 (레벨: 필요 경험치)
     1: 0, # 레벨 1은 시작 레벨이므로 경험치 0
@@ -55,7 +59,7 @@ PET_RESET_INTERVAL_DAYS = 7 # 펫 환생 주기 (7일)
 
 # --- [6] Tkinter GUI 기본 설정 ---
 WINDOW_WIDTH = 1000 
-WINDOW_HEIGHT = 900 # <-- 창 크기 문제 해결을 위해 이 값을 900으로 높였습니다!
+WINDOW_HEIGHT = 800 # <-- 창 크기 문제 해결을 위해 이 값을 900으로 높였습니다!
 BG_COLOR = "#e0e0e0" # 연한 회색 배경
 PRIMARY_COLOR = "#6a0dad" # 보라색 계열 (버튼, 제목 등에 사용)
 ACCENT_COLOR = "#ff6f61" # 주황-분홍 계열 (강조 색상)
