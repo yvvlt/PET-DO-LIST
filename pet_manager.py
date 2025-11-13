@@ -26,8 +26,8 @@ class Pet:
         
         self.image_path = self._get_image_path(self.species, self.level) 
         
-        self.max_happiness = PET_MAX_HAPPINESS # config 값 사용
-        self.max_fullness = PET_MAX_FULLNESS   # config 값 사용
+        self.max_happiness = MAX_PET_HAPPINESS # config 값 사용
+        self.max_fullness = MAX_PET_FULLNESS   # config 값 사용
         
         self.last_reset_date = last_reset_date if last_reset_date else datetime.date.today()
 
@@ -38,7 +38,7 @@ class Pet:
 
     def get_required_exp_for_level_up(self):
         """현재 레벨에서 다음 레벨로 가기 위해 필요한 경험치를 반환"""
-        return LEVEL_UP_EXP_REQUIREMENTS.get(self.level, DEFAULT_LEVEL_UP_EXP)
+        return EXP_REQUIRED_FOR_LEVEL_UP.get(self.level, EXP_PER_TODO_COMPLETE)
 
     def give_snack(self, snack_effect):
         self.happiness = min(self.max_happiness, self.happiness + snack_effect['happiness'])
