@@ -1,4 +1,4 @@
-# gui.py 파일 열어서 아래 코드로 완전히 덮어씌우고 저장해주세요!
+# gui.py
 
 import tkinter as tk
 from tkinter import ttk 

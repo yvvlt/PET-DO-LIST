@@ -1,4 +1,3 @@
-# 메인 어플리케이션 실행 파일 (GUI 생성, 전체 흐름 제어)
 # main.py
 
 import tkinter as tk

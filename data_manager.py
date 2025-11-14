@@ -1,5 +1,3 @@
-# 데이터 저장 및 불러오기 (펫 데이터, 투두리스트 데이터)
-
 # data_manager.py
 
 import pickle
