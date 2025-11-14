@@ -61,8 +61,8 @@ PET_RESET_INTERVAL_DAYS = 7 # 펫 환생 주기 (7일)
 WINDOW_WIDTH = 1000 
 WINDOW_HEIGHT = 800 # <-- 창 크기 문제 해결을 위해 이 값을 900으로 높였습니다!
 BG_COLOR = "#e0e0e0" # 연한 회색 배경
-PRIMARY_COLOR = "#4772ff" # 보라색 계열 (버튼, 제목 등에 사용)
-ACCENT_COLOR = "#0018cff9" # 주황-분홍 계열 (강조 색상)
+PRIMARY_COLOR = "#41bf49" # 보라색 계열 (버튼, 제목 등에 사용)
+ACCENT_COLOR = "#434fef" # 주황-분홍 계열 (강조 색상)
 
 
 # --- [7] 로그 파일 설정 (미사용) ---
@@ -71,8 +71,6 @@ ACCENT_COLOR = "#0018cff9" # 주황-분홍 계열 (강조 색상)
 
 # --- [8] 리소스 파일 경로 설정 ---
 RESOURCES_PATH = "resources/" # 모든 리소스가 담길 기본 폴더
-
-# 👇 새로 추가된 하위 폴더 경로들입니다.
 PET_IMAGES_SUBFOLDER = "pet_images/"  # 펫 이미지 파일들이 들어갈 resources 하위 폴더
 ITEM_IMAGES_SUBFOLDER = "item_images/" # 아이템/간식 이미지 파일들이 들어갈 resources 하위 폴더
 ETC_SUBFOLDER = "etc/"               # 기타 이미지들이 들어갈 resources 하위 폴더
