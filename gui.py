@@ -21,14 +21,10 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self._on_closing) # 닫기 버튼 처리
 
         # 중앙에 위치시키기
-        self.update_idletasks() # 위젯이 그려지기 전이라 width/height가 0일 수 있으므로 호출
-        # 현재 화면 크기 대비 다이얼로그 크기 추정치 (대략 200x(버튼수*40))
-        # 정확한 중앙 배치를 위해 팝업 크기를 알기 위해 잠시 geometry를 설정했다가 다시 재조정하는 방법도 있으나,
-        # 일단은 부모 윈도우 중앙에 근접하도록만 설정
+        self.update_idletasks()
         
-        # 작은 창 크기를 기준으로 설정
         dialog_width = 300
-        dialog_height = 150 + (len(species_list) * 50) # 대략적인 높이 계산
+        dialog_height = 150 + (len(species_list) * 50) 
 
         parent_x = parent.winfo_x()
         parent_y = parent.winfo_y()
@@ -38,9 +34,8 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         x = parent_x + (parent_width // 2) - (dialog_width // 2)
         y = parent_y + (parent_height // 2) - (dialog_height // 2)
         
-        # 팝업의 위치와 대략적인 크기 설정 (geometry에 wxh+x+y 순서)
         self.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
-        self.resizable(False, False) # 사이즈 조절 방지
+        self.resizable(False, False)
 
 
         tk.Label(self, text="어떤 종류의 펫을 키우시겠어요?", font=("Arial", 14, "bold"), pady=10).pack()
@@ -54,14 +49,14 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
                             font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
             btn.pack(side=tk.LEFT, padx=5, pady=5)
             
-        self.wait_window(self) # 이 창이 닫힐 때까지 부모 윈도우를 일시 정지
+        self.wait_window(self)
 
     def _on_select(self, species):
         self.result = species
-        self.destroy() # 창 닫기
+        self.destroy()
 
     def _on_closing(self):
-        self.result = None # 선택 없이 닫았을 경우 결과값 None
+        self.result = None
         self.destroy()
         
 # === 펫 종류 선택 모달 다이얼로그 클래스 추가 끝 ===
@@ -93,6 +88,9 @@ class PetDoListGUI:
         self.pet_canvas = tk.Canvas(self.left_panel, width=300, height=300, bg=config.PRIMARY_COLOR, highlightthickness=0)
         self.pet_photo_label = tk.Label(self.pet_canvas, bg=config.PRIMARY_COLOR) 
         self.pet_species_level_label = tk.Label(self.left_panel, text="종류: {펫 종류} / Lv. {펫 레벨}", font=("Arial", 14), bg=config.PRIMARY_COLOR, fg="white")
+        
+        # ✨ 새로운 EXP 라벨 추가 ✨
+        self.exp_label = tk.Label(self.left_panel, text="EXP: --/--", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
         
         self.happiness_label = tk.Label(self.left_panel, text="행복도", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
         self.happiness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate")
@@ -141,6 +139,9 @@ class PetDoListGUI:
         self.pet_photo_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER) 
         self.pet_species_level_label.pack(pady=5)
         
+        # ✨ EXP 라벨 배치 ✨
+        self.exp_label.pack(pady=5) # 펫 종류/레벨 아래에 배치
+        
         self.happiness_label.pack(pady=(10,0))
         self.happiness_bar.pack(pady=5)
         self.fullness_label.pack(pady=(5,0))
@@ -178,12 +179,12 @@ class PetDoListGUI:
 
     def load_pet_image(self, image_filename, size=(300, 300)):
         """펫 이미지를 로드하고 캐싱하여 성능을 최적화합니다."""
-        image_path_key = f"{image_filename}_{size[0]}x{size[1]}" # 캐싱 키에 사이즈 포함
+        image_path_key = f"{image_filename}_{size[0]}x{size[1]}" 
         
         if image_path_key not in self.pet_image_cache:
             try:
                 full_path = os.path.join(config.RESOURCES_PATH, config.PET_IMAGES_SUBFOLDER, image_filename)
-                print(f"DEBUG: 이미지 로드 시도 경로: {full_path}") #디버깅용 출력
+                print(f"DEBUG: 이미지 로드 시도 경로: {full_path}")
                 original_image = Image.open(full_path)
                 resized_image = original_image.resize(size, Image.Resampling.LANCZOS)
                 self.pet_image_cache[image_path_key] = ImageTk.PhotoImage(resized_image)
@@ -217,6 +218,10 @@ class PetDoListGUI:
         if pet:
             self.pet_name_label.config(text=f"이름: {pet.name}")
             self.pet_species_level_label.config(text=f"종류: {pet.species} / Lv. {pet.level}")
+            
+            # ✨ EXP 라벨 업데이트 ✨
+            required_exp = pet.get_required_exp_for_level_up()
+            self.exp_label.config(text=f"EXP: {pet.exp}/{required_exp if pet.level < config.MAX_PET_LEVEL else 'MAX'}")
 
             image_filename = f"{pet.species}_level{pet.level}.png" 
             pet_image = self.load_pet_image(image_filename) 
@@ -234,6 +239,7 @@ class PetDoListGUI:
         else:
             self.pet_name_label.config(text="이름: ---")
             self.pet_species_level_label.config(text="종류: --- / Lv. --")
+            self.exp_label.config(text="EXP: --/--") # 펫이 없을 때 초기화
             self.pet_photo_label.config(image='') 
             self.happiness_bar['value'] = 0
             self.fullness_bar['value'] = 0
@@ -288,8 +294,6 @@ class PetDoListGUI:
         else:
             messagebox.showinfo("선택 오류", "삭제할 할 일을 선택해주세요.", parent=self.master)
 
-    # === PetDoListGUI에 새로운 메서드 추가 시작 ===
-    # 👇 이 메서드가 PetDoListGUI 클래스 안에! 그리고 가장 마지막 부분에 잘 들어가야 합니다.
     def show_pet_species_selection(self, species_list, dialog_title="펫 종류 선택"):
         """
         펫 종류를 버튼으로 선택하는 모달 다이얼로그를 표시합니다.
@@ -298,4 +302,3 @@ class PetDoListGUI:
         """
         dialog = PetSpeciesSelectionDialog(self.master, species_list, dialog_title)
         return dialog.result
-    # === PetDoListGUI에 새로운 메서드 추가 끝 ===
