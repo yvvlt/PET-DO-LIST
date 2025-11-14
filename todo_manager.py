@@ -1,5 +1,3 @@
-# 투두리스트 관련 로직 (할 일 추가/삭제/완료, 간식 지급)
-
 # todo_manager.py
 
 import datetime # 날짜 처리를 위해 datetime 모듈 추가

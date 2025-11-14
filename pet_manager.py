@@ -1,5 +1,4 @@
-# 펫 관련 로직 (펫 상태 관리, 성장, 환생 로직)
-
+# pet_manager.py
 
 import datetime
 import random # 펫 종류 랜덤 선택을 위해 추가
