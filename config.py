@@ -59,7 +59,7 @@ PET_RESET_INTERVAL_DAYS = 7 # 펫 환생 주기 (7일)
 
 # --- [6] Tkinter GUI 기본 설정 ---
 WINDOW_WIDTH = 1000 
-WINDOW_HEIGHT = 800 # <-- 창 크기 문제 해결을 위해 이 값을 900으로 높였습니다!
+WINDOW_HEIGHT = 700 # <-- 창 크기 문제 해결을 위해 이 값을 900으로 높였습니다!
 BG_COLOR = "#e0e0e0" # 연한 회색 배경
 PRIMARY_COLOR = "#41bf49" # 보라색 계열 (버튼, 제목 등에 사용)
 ACCENT_COLOR = "#434fef" # 주황-분홍 계열 (강조 색상)
