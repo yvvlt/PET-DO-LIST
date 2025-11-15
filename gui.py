@@ -218,7 +218,6 @@ class PetDoListGUI:
         self.pet_species_level_label.pack(pady=5)
         self.exp_label.pack(pady=5)
         
-        
         self.happiness_label.pack(pady=(10,0))
         self.happiness_bar.pack(pady=5)
         self.fullness_label.pack(pady=(5,0))
