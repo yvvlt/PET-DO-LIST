@@ -207,7 +207,6 @@ class PetDoListGUI:
         self.snack_inventory_label = tk.Label(self.right_panel, text="간식 인벤토리", font=("Arial", 18, "bold"), bg=config.BG_COLOR, fg=config.PRIMARY_COLOR)
         self.snack_list_label = tk.Label(self.right_panel, text="기본 간식: {X}개, 고급 간식: {Y}개", font=("Arial", 12), bg=config.BG_COLOR)
 
-
     def _setup_layout(self):
         """생성된 위젯들을 화면에 배치합니다."""
         
