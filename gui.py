@@ -17,7 +17,6 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         self.grab_set()        
         self.title(title)
         self.result = None     
-
         self.protocol("WM_DELETE_WINDOW", self._on_closing) 
 
         self.update_idletasks()
