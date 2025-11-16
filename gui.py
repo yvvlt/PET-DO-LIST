@@ -226,12 +226,11 @@ class PetDoListGUI:
         self.snack_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5)
         self.snack_premium_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5) # 펫 기록 보기 버튼 위에 배치
         
-
         self.history_rebirth_button_frame.pack(pady=(5,15), fill=tk.X)
         self.view_history_button.pack(side=tk.LEFT, padx=5, ipadx=20, ipady=10)
 
         self.rebirth_button.pack(side=tk.LEFT, padx=5, ipadx=20, ipady=10)
-        
+
         self.right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, padx=10, pady=10, expand=True)
         self.date_nav_frame.pack(fill=tk.X, pady=10)
         self.prev_day_button.pack(side=tk.LEFT, padx=5)
