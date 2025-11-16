@@ -236,7 +236,7 @@ class PetDoListGUI:
         self.prev_day_button.pack(side=tk.LEFT, padx=5)
         self.current_date_label.pack(side=tk.LEFT, expand=True)
         self.next_day_button.pack(side=tk.RIGHT, padx=5)
-
+        
         self.todo_label.pack(pady=10)
         self.todo_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.todo_listbox.pack(fill=tk.BOTH, expand=True, pady=5)
