@@ -84,8 +84,7 @@ class HistoricalPetViewerDialog(tk.Toplevel):
 
         self.vsb.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
-        self.canvas.create_window((4,4), window=self.record_frame, anchor="nw", 
-                                  tags="self.record_frame")
+        self.canvas.create_window((4,4), window=self.record_frame, anchor="nw", tags="self.record_frame")
 
         self.record_frame.bind("<Configure>", self.on_frame_configure)
         self.canvas.bind('<Enter>', self._bound_to_mousewheel)
