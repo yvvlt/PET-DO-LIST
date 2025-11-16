@@ -208,6 +208,7 @@ class PetDoListGUI:
 
     def _setup_layout(self):
         """생성된 위젯들을 화면에 배치합니다."""
+
         
         self.left_panel.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10, expand=False)
         self.pet_name_label.pack(pady=10)
@@ -221,7 +222,7 @@ class PetDoListGUI:
         self.fullness_label.pack(pady=(5,0))
         self.fullness_bar.pack(pady=5)
         
-        self.snack_button_frame.pack(pady=(15,5))
+        self.snack_button_frame.pack(pady=(15,5), fill=tk.X)
         self.snack_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5)
         self.snack_premium_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5) # 펫 기록 보기 버튼 위에 배치
         
