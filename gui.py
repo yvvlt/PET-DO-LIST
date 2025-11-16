@@ -252,7 +252,6 @@ class PetDoListGUI:
         self.snack_inventory_label.pack(pady=(20, 10))
         self.snack_list_label.pack(pady=5)
 
-
     def load_pet_image(self, image_filename, size=(300, 300)):
         """펫 이미지를 로드하고 캐싱하여 성능을 최적화합니다."""
         image_path_key = f"{image_filename}_{size[0]}x{size[1]}" 
