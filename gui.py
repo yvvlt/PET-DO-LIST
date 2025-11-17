@@ -168,17 +168,19 @@ class PetDoListGUI:
         self.pet_species_level_label = tk.Label(self.left_panel, text="종류: {펫 종류} / Lv. {펫 레벨}", font=("Arial", 14), bg=config.PRIMARY_COLOR, fg="white")
         self.exp_label = tk.Label(self.left_panel, text="EXP: --/--", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
         
-        self.happiness_label = tk.Label(self.left_panel, text="행복도", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
+        self.happiness_label = tk.Label(self.left_panel, text="행복도", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
         self.happiness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate")
         
-        self.fullness_label = tk.Label(self.left_panel, text="포만감", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
+        self.fullness_label = tk.Label(self.left_panel, text="포만감", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
         self.fullness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate")
         
-        self.snack_button_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
+        self.snack_button_contaianer = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
+        self.snack_button_frame = tk.Frame(self.snack_button_contaianer, bg=config.PRIMARY_COLOR, bd=0, highlightthickness=0)
         self.snack_button = tk.Button(self.left_panel, text="간식 주기 (기본)", command=lambda: self.app_logic.give_snack_to_pet("기본 간식"), font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white")
         self.snack_premium_button = tk.Button(self.left_panel, text="간식 주기 (고급)", command=lambda: self.app_logic.give_snack_to_pet("고급 간식"), font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white")
         
-        self.history_rebirth_button_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
+        self.history_rebirth_button_container = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
+        self.history_rebirth_button_frame = tk.Frame(self.history_rebirth_button_container, bg=config.PRIMARY_COLOR)
         self.view_history_button = tk.Button(self.left_panel, text="펫 기록 보기", command=self.show_pet_history, font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white")
 
         self.rebirth_button = tk.Button(self.left_panel, text="강제 환생 (초기화)", command=self.app_logic.perform_rebirth_via_dialog, font=("Arial", 10), bg="lightgray")
@@ -216,16 +218,18 @@ class PetDoListGUI:
         self.pet_species_level_label.pack(pady=5)
         self.exp_label.pack(pady=5)
         
-        self.happiness_label.pack(pady=(10,0))
-        self.happiness_bar.pack(pady=5)
-        self.fullness_label.pack(pady=(5,0))
-        self.fullness_bar.pack(pady=5)
+        self.happiness_label.pack(pady=(0,0))
+        self.happiness_bar.pack(pady=(0,0))
+        self.fullness_label.pack(pady=(0,0))
+        self.fullness_bar.pack(pady=(0,0))
         
-        self.snack_button_frame.pack(side=tk.TOP, pady=(5,5), fill=tk.X, expand=True)
+        self.snack_button_contaianer.pack(side=tk.TOP, pady=(5,5), fill=tk.X, expand=False)
+        self.snack_button_frame.pack(side=tk.TOP)
         self.snack_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5)
         self.snack_premium_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5) # 펫 기록 보기 버튼 위에 배치
         
-        self.history_rebirth_button_frame.pack(side=tk.TOP, pady=(5,15), fill=tk.X, expand=True)
+        self.history_rebirth_button_container.pack(side=tk.TOP, pady=(5, 15), fill=tk.X, expand=False)
+        self.history_rebirth_button_frame.pack(side=tk.TOP)
         self.view_history_button.pack(side=tk.LEFT, padx=5, ipadx=20, ipady=10)
         self.rebirth_button.pack(side=tk.LEFT, padx=5, ipadx=20, ipady=10)
 
