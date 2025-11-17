@@ -296,13 +296,22 @@ class PetDoListGUI:
         return self.pet_image_cache[image_path_key]
 
     def update_gui_with_pet_data(self):
+        """app_logic (main.py)의 펫 데이터를 기반으로 GUI 업데이트"""
+
         pet = self.app_logic.pet
         if pet:
             self.pet_name_label.config(text=f"이름: {pet.name}")
             self.pet_species_level_label.config(text=f"종류: {pet.species} / Lv. {pet.level}")
             
-            required_exp = pet.get_required_exp_for_level_up()
-            self.exp_label.config(text=f"EXP: {pet.exp}/{required_exp if pet.level < config.MAX_PET_LEVEL else 'MAX'}")
+            # ⭐⭐⭐ 경험치 라벨 업데이트 로직 재점검 ⭐⭐⭐
+            # 펫의 레벨이 config.MAX_PET_LEVEL에 도달했는지 확인합니다.
+            if pet.level >= config.MAX_PET_LEVEL:
+                exp_display_text = "EXP: MAX" # 최대 레벨이면 'MAX'로 표시
+            else:
+                required_exp = pet.get_required_exp_for_level_up()
+                exp_display_text = f"EXP: {pet.exp}/{required_exp}"
+            
+            self.exp_label.config(text=exp_display_text) # 계산된 텍스트로 라벨 업데이트
 
             image_filename = f"{pet.species}_level{pet.level}.png" 
             pet_image = self.load_pet_image(image_filename) 
