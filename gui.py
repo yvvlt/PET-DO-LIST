@@ -221,7 +221,7 @@ class PetDoListGUI:
         self.fullness_label.pack(pady=(5,0))
         self.fullness_bar.pack(pady=5)
         
-        self.snack_button_frame.pack(side=tk.TOP, pady=(15,5), fill=tk.X, expand=True)
+        self.snack_button_frame.pack(side=tk.TOP, pady=(5,5), fill=tk.X, expand=True)
         self.snack_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5)
         self.snack_premium_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5) # 펫 기록 보기 버튼 위에 배치
         
