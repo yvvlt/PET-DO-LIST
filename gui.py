@@ -17,6 +17,7 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         self.grab_set()        
         self.title(title)
         self.result = None     
+
         self.protocol("WM_DELETE_WINDOW", self._on_closing) 
 
         self.update_idletasks()
@@ -53,16 +54,15 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         self.destroy()
         
 
-# === 과거 펫 기록 보기 다이얼로그 클래스 추가 시작 ===
+# === 과거 펫 기록 보기 다이얼로그 클래스 (이전 코드와 동일) ===
 class HistoricalPetViewerDialog(tk.Toplevel):
     def __init__(self, parent, historical_pets, pet_image_loader_func, title="펫 기록 보기"):
         super().__init__(parent)
         self.transient(parent)
         self.grab_set()
         self.title(title)
-        self.pet_image_loader_func = pet_image_loader_func # 이미지를 로드할 함수 (PetDoListGUI.load_pet_image)
+        self.pet_image_loader_func = pet_image_loader_func 
 
-        # 팝업 창의 크기와 위치를 부모 창에 맞게 조정 (임시, 나중에 중앙 배치)
         dialog_width = 500
         dialog_height = 600
         parent_x = parent.winfo_x()
@@ -72,11 +72,10 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         x = parent_x + (parent_width // 2) - (dialog_width // 2)
         y = parent_y + (parent_height // 2) - (dialog_height // 2)
         self.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
-        self.resizable(False, True) # 높이만 조절 가능하도록
+        self.resizable(False, True) 
 
         tk.Label(self, text="🌟 나의 펫 성장 기록 🌟", font=("Arial", 18, "bold"), pady=10, fg=config.PRIMARY_COLOR).pack()
 
-        # 스크롤 가능한 프레임 생성
         self.canvas = tk.Canvas(self, borderwidth=0, background=config.BG_COLOR)
         self.record_frame = tk.Frame(self.canvas, background=config.BG_COLOR)
         self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
@@ -84,7 +83,8 @@ class HistoricalPetViewerDialog(tk.Toplevel):
 
         self.vsb.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
-        self.canvas.create_window((4,4), window=self.record_frame, anchor="nw", tags="self.record_frame")
+        self.canvas.create_window((4,4), window=self.record_frame, anchor="nw", 
+                                  tags="self.record_frame")
 
         self.record_frame.bind("<Configure>", self.on_frame_configure)
         self.canvas.bind('<Enter>', self._bound_to_mousewheel)
@@ -94,14 +94,12 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         if not historical_pets:
             tk.Label(self.record_frame, text="아직 저장된 펫 기록이 없습니다.", font=("Arial", 12), fg="gray", bg=config.BG_COLOR).pack(pady=20)
         else:
-            # 최신 기록이 위에 오도록 리스트 역순으로 표시
             for record in reversed(historical_pets):
                 self._create_record_entry(record)
 
         self.wait_window(self)
 
     def on_frame_configure(self, event):
-        """내부 프레임 크기가 변경될 때 캔버스 스크롤 영역을 업데이트합니다."""
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def _bound_to_mousewheel(self, event):
@@ -115,20 +113,17 @@ class HistoricalPetViewerDialog(tk.Toplevel):
             
 
     def _create_record_entry(self, record):
-        """각 펫 기록에 대한 위젯을 생성하고 record_frame에 배치합니다."""
         entry_frame = tk.Frame(self.record_frame, bd=2, relief=tk.GROOVE, padx=10, pady=10, bg="white")
         entry_frame.pack(fill=tk.X, padx=5, pady=5)
 
-        # 이미지 로드 (load_pet_image 함수를 통해)
-        image_size = (60, 60) # 기록 보기에서는 작게 표시
+        image_size = (60, 60) 
         image_filename = f"{record['species']}_level{record['level']}.png"
         pet_img = self.pet_image_loader_func(image_filename, size=image_size)
 
         img_label = tk.Label(entry_frame, image=pet_img, bg="white")
-        img_label.image = pet_img # 참조 유지
+        img_label.image = pet_img 
         img_label.pack(side=tk.LEFT, padx=10)
 
-        # 정보 표시
         info_text = (
             f"기간: {record['start_date'].strftime('%Y/%m/%d')} ~ {record['end_date'].strftime('%Y/%m/%d')}\n"
             f"펫 종류: {record['species']}\n"
@@ -136,8 +131,6 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         )
         info_label = tk.Label(entry_frame, text=info_text, justify=tk.LEFT, font=("Arial", 10), bg="white")
         info_label.pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=True)
-
-# === 과거 펫 기록 보기 다이얼로그 클래스 추가 끝 ===
 
 
 class PetDoListGUI:
@@ -169,21 +162,20 @@ class PetDoListGUI:
         self.exp_label = tk.Label(self.left_panel, text="EXP: --/--", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
         
         self.happiness_label = tk.Label(self.left_panel, text="행복도", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
-        self.happiness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate")
-        
-        self.fullness_label = tk.Label(self.left_panel, text="포만감", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
-        self.fullness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate")
-        
-        self.snack_button_contaianer = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
-        self.snack_button_frame = tk.Frame(self.snack_button_contaianer, bg=config.PRIMARY_COLOR, bd=0, highlightthickness=0)
-        self.snack_button = tk.Button(self.left_panel, text="간식 주기 (기본)", command=lambda: self.app_logic.give_snack_to_pet("기본 간식"), font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white")
-        self.snack_premium_button = tk.Button(self.left_panel, text="간식 주기 (고급)", command=lambda: self.app_logic.give_snack_to_pet("고급 간식"), font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white")
-        
-        self.history_rebirth_button_container = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
-        self.history_rebirth_button_frame = tk.Frame(self.history_rebirth_button_container, bg=config.PRIMARY_COLOR)
-        self.view_history_button = tk.Button(self.left_panel, text="펫 기록 보기", command=self.show_pet_history, font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white")
+        self.happiness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate") 
 
-        self.rebirth_button = tk.Button(self.left_panel, text="강제 환생 (초기화)", command=self.app_logic.perform_rebirth_via_dialog, font=("Arial", 10), bg="lightgray")
+        self.fullness_label = tk.Label(self.left_panel, text="포만감", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
+        self.fullness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate") 
+        
+        # ⭐⭐⭐ 간식 버튼들을 위한 프레임 (left_panel의 자식, grid의 부모) ⭐⭐⭐
+        self.snack_buttons_row_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR, bd=0, highlightthickness=0)
+        self.snack_button = tk.Button(self.snack_buttons_row_frame, text="간식 주기 (기본)", command=lambda: self.app_logic.give_snack_to_pet("기본 간식"), font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white") 
+        self.snack_premium_button = tk.Button(self.snack_buttons_row_frame, text="간식 주기 (고급)", command=lambda: self.app_logic.give_snack_to_pet("고급 간식"), font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white") 
+        
+        # ⭐⭐⭐ 펫 기록/환생 버튼들을 위한 프레임 (left_panel의 자식, grid의 부모) ⭐⭐⭐
+        self.action_buttons_row_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR, bd=0, highlightthickness=0) # 이름 변경
+        self.view_history_button = tk.Button(self.action_buttons_row_frame, text="펫 기록 보기", command=self.show_pet_history, font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white")
+        self.rebirth_button = tk.Button(self.action_buttons_row_frame, text="강제 환생 (테스트)", command=self.app_logic.perform_rebirth_via_dialog, font=("Arial", 10), bg="lightgray")
 
 
         # --- 2. 우측 패널 (투두리스트 및 간식 인벤토리) ---
@@ -207,10 +199,11 @@ class PetDoListGUI:
         self.snack_inventory_label = tk.Label(self.right_panel, text="간식 인벤토리", font=("Arial", 18, "bold"), bg=config.BG_COLOR, fg=config.PRIMARY_COLOR)
         self.snack_list_label = tk.Label(self.right_panel, text="기본 간식: {X}개, 고급 간식: {Y}개", font=("Arial", 12), bg=config.BG_COLOR)
 
+
     def _setup_layout(self):
         """생성된 위젯들을 화면에 배치합니다."""
-
-
+        
+        # left_panel은 pack으로 관리
         self.left_panel.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10, expand=False)
         self.pet_name_label.pack(pady=10)
         self.pet_canvas.pack(pady=5)
@@ -218,21 +211,36 @@ class PetDoListGUI:
         self.pet_species_level_label.pack(pady=5)
         self.exp_label.pack(pady=5)
         
-        self.happiness_label.pack(pady=(0,0))
-        self.happiness_bar.pack(pady=(0,0))
-        self.fullness_label.pack(pady=(0,0))
-        self.fullness_bar.pack(pady=(0,0))
+        self.happiness_label.pack(pady=(0,0)) 
+        self.happiness_bar.pack(pady=(0,0))   
         
-        self.snack_button_contaianer.pack(side=tk.TOP, pady=(5,5), fill=tk.X, expand=False)
-        self.snack_button_frame.pack(side=tk.TOP)
-        self.snack_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5)
-        self.snack_premium_button.pack(side=tk.LEFT, padx=5, ipadx=10, ipady=5) # 펫 기록 보기 버튼 위에 배치
+        self.fullness_label.pack(pady=(0,0)) 
+        self.fullness_bar.pack(pady=(0,0))   
         
-        self.history_rebirth_button_container.pack(side=tk.TOP, pady=(5, 15), fill=tk.X, expand=False)
-        self.history_rebirth_button_frame.pack(side=tk.TOP)
-        self.view_history_button.pack(side=tk.LEFT, padx=5, ipadx=20, ipady=10)
-        self.rebirth_button.pack(side=tk.LEFT, padx=5, ipadx=20, ipady=10)
+        # ⭐⭐⭐ 간식 버튼 프레임을 left_panel에 pack ⭐⭐⭐
+        self.snack_buttons_row_frame.pack(side=tk.TOP, pady=(5, 5), fill=tk.X, expand=False)
+        # ⭐⭐⭐ 이 프레임 안에서 버튼들을 grid로 배치 (중앙 정렬) ⭐⭐⭐
+        self.snack_buttons_row_frame.grid_columnconfigure(0, weight=1) # 왼쪽 여백 column
+        self.snack_buttons_row_frame.grid_columnconfigure(1, weight=0) # 첫 번째 버튼
+        self.snack_buttons_row_frame.grid_columnconfigure(2, weight=0) # 두 번째 버튼
+        self.snack_buttons_row_frame.grid_columnconfigure(3, weight=1) # 오른쪽 여백 column
+        
+        self.snack_button.grid(row=0, column=1, padx=5, ipadx=10, ipady=5)
+        self.snack_premium_button.grid(row=0, column=2, padx=5, ipadx=10, ipady=5)
+        
+        # ⭐⭐⭐ 액션 버튼 프레임을 left_panel에 pack ⭐⭐⭐
+        self.action_buttons_row_frame.pack(side=tk.TOP, pady=(5, 15), fill=tk.X, expand=False) 
+        # ⭐⭐⭐ 이 프레임 안에서 버튼들을 grid로 배치 (중앙 정렬) ⭐⭐⭐
+        self.action_buttons_row_frame.grid_columnconfigure(0, weight=1)
+        self.action_buttons_row_frame.grid_columnconfigure(1, weight=0)
+        self.action_buttons_row_frame.grid_columnconfigure(2, weight=0)
+        self.action_buttons_row_frame.grid_columnconfigure(3, weight=1)
 
+        self.view_history_button.grid(row=0, column=1, padx=5, ipadx=10, ipady=5) 
+        self.rebirth_button.grid(row=0, column=2, padx=5, ipadx=10, ipady=5) 
+
+
+        # --- 우측 패널 (pack으로 관리) ---
         self.right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, padx=10, pady=10, expand=True)
         self.date_nav_frame.pack(fill=tk.X, pady=10)
         self.prev_day_button.pack(side=tk.LEFT, padx=5)
@@ -254,8 +262,8 @@ class PetDoListGUI:
         self.snack_inventory_label.pack(pady=(20, 10))
         self.snack_list_label.pack(pady=5)
 
+
     def load_pet_image(self, image_filename, size=(300, 300)):
-        """펫 이미지를 로드하고 캐싱하여 성능을 최적화합니다."""
         image_path_key = f"{image_filename}_{size[0]}x{size[1]}" 
         
         if image_path_key not in self.pet_image_cache:
@@ -275,7 +283,7 @@ class PetDoListGUI:
                         self.pet_image_cache['error_image'] = ImageTk.PhotoImage(error_img_resized)
                     except FileNotFoundError:
                         print(f"기본 에러 이미지 파일 '{error_image_path}'도 찾을 수 없습니다. 빈 이미지로 처리합니다.")
-                        empty_img = Image.new('RGBA', size, (0, 0, 0, 0)) # 투명 이미지
+                        empty_img = Image.new('RGBA', size, (0, 0, 0, 0))
                         self.pet_image_cache['error_image'] = ImageTk.PhotoImage(empty_img)
                     except Exception as e:
                         print(f"에러 이미지 로드 중 오류 발생: {e}. 빈 이미지로 처리합니다.")
@@ -288,8 +296,6 @@ class PetDoListGUI:
         return self.pet_image_cache[image_path_key]
 
     def update_gui_with_pet_data(self):
-        """app_logic (main.py)의 펫 데이터를 기반으로 GUI를 업데이트합니다."""
-        
         pet = self.app_logic.pet
         if pet:
             self.pet_name_label.config(text=f"이름: {pet.name}")
@@ -366,20 +372,12 @@ class PetDoListGUI:
             messagebox.showinfo("선택 오류", "삭제할 할 일을 선택해주세요.", parent=self.master)
 
     def show_pet_species_selection(self, species_list, dialog_title="펫 종류 선택"):
-        """
-        펫 종류를 버튼으로 선택하는 모달 다이얼로그를 표시합니다.
-        Returns:
-            str: 선택된 펫 종류 (사용자가 닫거나 선택하지 않으면 None).
-        """
         dialog = PetSpeciesSelectionDialog(self.master, species_list, dialog_title)
         return dialog.result
 
-    # ✨ 새로운 메서드 추가: 펫 기록 보기 다이얼로그 띄우기 ✨
     def show_pet_history(self):
-        """과거 펫 기록을 보여주는 다이얼로그를 엽니다."""
-        # app_logic(main.py)에서 historical_pets 리스트를 가져와서 전달
         history_dialog = HistoricalPetViewerDialog(
             self.master, 
             self.app_logic.historical_pets, 
-            self.load_pet_image # 이미지를 로드할 때 PetDoListGUI의 load_pet_image 함수를 사용
+            self.load_pet_image 
         )
