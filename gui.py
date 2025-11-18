@@ -205,7 +205,7 @@ class PetDoListGUI:
         """생성된 위젯들을 화면에 배치합니다."""
         
         # left_panel은 pack으로 관리
-        self.left_panel.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10, expand=False)
+        self.left_panel.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10, expand=True)
         self.pet_name_label.pack(pady=10)
         self.pet_canvas.pack(pady=5)
         self.pet_photo_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER) 
@@ -218,7 +218,7 @@ class PetDoListGUI:
         self.fullness_label.pack(pady=(0,0)) 
         self.fullness_bar.pack(pady=(0,0))   
         
-        # ⭐⭐⭐ 간식 버튼 프레임을 left_panel에 pack ⭐⭐⭐
+        self.spacer_frame.pack(side=tk.TOP, expand=True, fill=tk.Y)
         self.snack_buttons_row_frame.pack(side=tk.TOP, pady=(5, 5), fill=tk.X, expand=False)
         # ⭐⭐⭐ 이 프레임 안에서 버튼들을 grid로 배치 (중앙 정렬) ⭐⭐⭐
         self.snack_buttons_row_frame.grid_columnconfigure(0, weight=1) # 왼쪽 여백 column
