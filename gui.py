@@ -9,7 +9,7 @@ import datetime
 
 import config 
 
-# === 펫 종류 선택 모달 다이얼로그 클래스 (이전 코드와 동일) ===
+# === 펫 종류 선택 모달 다이얼로그 클래스 ===
 class PetSpeciesSelectionDialog(tk.Toplevel):
     def __init__(self, parent, species_list, title="펫 종류 선택"):
         super().__init__(parent)
@@ -54,7 +54,7 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         self.destroy()
         
 
-# === 과거 펫 기록 보기 다이얼로그 클래스 (이전 코드와 동일) ===
+# === 과거 펫 기록 보기 다이얼로그 클래스 ===
 class HistoricalPetViewerDialog(tk.Toplevel):
     def __init__(self, parent, historical_pets, pet_image_loader_func, title="펫 기록 보기"):
         super().__init__(parent)
@@ -204,7 +204,6 @@ class PetDoListGUI:
     def _setup_layout(self):
         """생성된 위젯들을 화면에 배치합니다."""
         
-        # left_panel은 pack으로 관리
         self.left_panel.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10, expand=True)
         self.pet_name_label.pack(pady=10)
         self.pet_canvas.pack(pady=5)
