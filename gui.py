@@ -167,6 +167,7 @@ class PetDoListGUI:
         self.fullness_label = tk.Label(self.left_panel, text="포만감", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
         self.fullness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate") 
         
+        self.spacer_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
         # ⭐⭐⭐ 간식 버튼들을 위한 프레임 (left_panel의 자식, grid의 부모) ⭐⭐⭐
         self.snack_buttons_row_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR, bd=0, highlightthickness=0)
         self.snack_button = tk.Button(self.snack_buttons_row_frame, text="간식 주기 (기본)", command=lambda: self.app_logic.give_snack_to_pet("기본 간식"), font=("Arial", 10, "bold"), bg=config.ACCENT_COLOR, fg="white") 
@@ -229,7 +230,7 @@ class PetDoListGUI:
         self.snack_premium_button.grid(row=0, column=2, padx=5, ipadx=10, ipady=5)
         
         # ⭐⭐⭐ 액션 버튼 프레임을 left_panel에 pack ⭐⭐⭐
-        self.action_buttons_row_frame.pack(side=tk.TOP, pady=(5, 15), fill=tk.X, expand=False) 
+        self.action_buttons_row_frame.pack(side=tk.TOP, pady=(5, 50), fill=tk.X, expand=False) 
         # ⭐⭐⭐ 이 프레임 안에서 버튼들을 grid로 배치 (중앙 정렬) ⭐⭐⭐
         self.action_buttons_row_frame.grid_columnconfigure(0, weight=1)
         self.action_buttons_row_frame.grid_columnconfigure(1, weight=0)
