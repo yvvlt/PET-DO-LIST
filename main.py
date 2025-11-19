@@ -6,12 +6,13 @@ import datetime
 import random 
 import os 
 from playsound import playsound 
+import pygame.mixer as mixer # ⭐ BGM 재생을 위해 pygame.mixer 임포트 ⭐
 
 import config
 from pet_manager import Pet
 from todo_manager import TodoManager
 import data_manager
-from gui import PetDoListGUI # gui 모듈을 여기에서 임포트합니다.
+from gui import PetDoListGUI 
 
 class PetDoListApp:
     def __init__(self, master):
@@ -26,11 +27,24 @@ class PetDoListApp:
         self.todo_manager = None
         self.historical_pets = [] 
 
-        # ⭐ self.gui 초기화 순서를 _pre_gui_setup() 보다 앞으로! ⭐
         self.gui = PetDoListGUI(master, self) 
         
         self._pre_gui_setup() 
-        
+
+        # ⭐ BGM 초기화 및 재생 로직 ⭐
+        mixer.init() # Pygame 믹서 초기화 (처음에 한 번만 호출)
+        bgm_path = os.path.join(config.RESOURCES_PATH, config.SOUNDS_SUBFOLDER, config.BGM_FILE)
+        if os.path.exists(bgm_path):
+            try:
+                mixer.music.load(bgm_path) # BGM 파일 로드
+                mixer.music.set_volume(config.BGM_VOLUME) # 볼륨 설정 (config.py에서 설정)
+                mixer.music.play(loops=-1) # -1은 무한 반복 재생을 의미합니다!
+                print(f"BGM '{config.BGM_FILE}' 재생 시작.")
+            except Exception as e:
+                print(f"BGM 재생 중 오류 발생: {e}")
+        else:
+            print(f"BGM 파일 '{bgm_path}'을 찾을 수 없어 재생할 수 없습니다. config.BGM_FILE과 파일 경로를 확인해주세요.")
+
         self.gui.update_gui_with_pet_data() 
 
     def _pre_gui_setup(self):
@@ -50,7 +64,6 @@ class PetDoListApp:
 
     def create_initial_pet_and_data_via_dialog(self):
         """새로운 펫과 데이터를 생성하고 사용자에게 이름/종류를 팝업으로 입력받습니다."""
-        
         pet_name = simpledialog.askstring("펫 이름", "새로운 펫의 이름을 지어주세요:", parent=self.master)
         if not pet_name or pet_name.strip() == "":
             pet_name = config.INITIAL_PET_NAME 
@@ -61,12 +74,10 @@ class PetDoListApp:
             selected_species = config.PET_SPECIES_LIST[0] 
             messagebox.showinfo("알림", f"펫 종류를 선택하지 않아 '{selected_species}' 펫으로 시작합니다.", parent=self.master)
 
-
         self.pet = Pet(name=pet_name, species=selected_species)
         self.todo_manager = TodoManager() 
         messagebox.showinfo("펫 생성", f"'{self.pet.name}' ({self.pet.species}) 펫과 함께 Pet-Do-List를 시작합니다!", parent=self.master)
         print(f"새로운 펫 '{self.pet.name}' ({self.pet.species}) 생성 완료!")
-
 
     def check_weekly_reset(self):
         """매주 지정된 요일/시간에 펫이 환생했는지 확인하고 처리합니다."""
@@ -98,11 +109,9 @@ class PetDoListApp:
             self.historical_pets.append(pet_record)
             print(f"과거 펫 기록 추가: {pet_record}")
 
-
     def perform_rebirth_via_dialog(self):
         """펫을 환생시키고 초기 데이터를 재설정하며 사용자에게 입력받습니다."""
         print("펫 환생을 시작합니다!")
-        
         self._record_current_pet_history()
 
         new_pet_name = simpledialog.askstring("펫 환생!", f"이전 펫 '{self.pet.name}'이 환생했습니다! 새로운 펫의 이름을 지어주세요:", parent=self.master)
@@ -121,11 +130,14 @@ class PetDoListApp:
         messagebox.showinfo("펫 환생 완료!", f"'{self.pet.name}' ({self.pet.species})으로 새롭게 태어났습니다! 환영해주세요!", parent=self.master)
         self.gui.update_gui_with_pet_data() 
         self.save_all_data()
-        self.play_sound(config.SOUND_EFFECT_PET_REBIRTH) # ⭐ 환생 효과음 재생 ⭐
+        self.play_sound(config.SOUND_EFFECT_PET_REBIRTH) 
 
     def on_closing(self):
         """애플리케이션 종료 시 데이터를 저장하고 윈도우를 닫습니다."""
         self.save_all_data()
+        # ⭐ BGM 믹서 종료 로직 ⭐
+        mixer.music.stop() # BGM 정지
+        mixer.quit()       # Pygame 믹서 종료 (선택 사항이지만 깔끔합니다)
         self.master.destroy()
 
     def save_all_data(self):
@@ -136,7 +148,6 @@ class PetDoListApp:
         else:
             print("저장할 데이터가 없어 저장을 건너뛰는 작업을 수행하고 있어요.")
 
-    # ⭐ 소리 재생 헬퍼 함수 추가 ⭐
     def play_sound(self, sound_file_name):
         """
         지정된 효과음 파일을 재생합니다.
@@ -151,7 +162,6 @@ class PetDoListApp:
         else:
             print(f"사운드 파일 '{sound_path}'을 찾을 수 없습니다.")
             
-    # ⭐ 게이지 만점 체크 및 보상 메서드 추가 ⭐
     def _check_and_reward_full_gauges(self):
         """
         펫의 행복도와 포만감 게이지가 모두 최대일 경우,
@@ -166,9 +176,8 @@ class PetDoListApp:
 
         if is_full_happiness and is_full_fullness:
             if not self.pet.has_been_rewarded_for_full_gauges:
-                # ⭐ 고급 간식 지급 ⭐
                 self.todo_manager.add_snack("고급 간식", 1) 
-                self.pet.has_been_rewarded_for_full_gauges = True # 보상 지급 플래그 설정
+                self.pet.has_been_rewarded_for_full_gauges = True 
                 
                 messagebox.showinfo("특별 보상!", f"'{self.pet.name}'(이)가 행복하고 포만감이 가득찼습니다!\n축하합니다! 고급 간식 1개를 획득했습니다!", parent=self.master)
                 self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP) 
@@ -218,7 +227,10 @@ class PetDoListApp:
                 self.save_all_data() 
                 self._check_and_reward_full_gauges() 
                 return True
+            return False # 사용자 취소
+        messagebox.showerror("오류", "할 일 삭제 처리에 실패했습니다.", parent=self.master) # 인덱스 오류 등
         return False
+
 
     def give_snack_to_pet(self, snack_name):
         if self.pet.happiness >= self.pet.max_happiness and self.pet.fullness >= self.pet.max_fullness:
@@ -244,16 +256,15 @@ class PetDoListApp:
         self.gui.update_gui_with_pet_data() 
         print(f"날짜 변경: {current_display_date} -> {new_display_date}")
         self._check_and_reward_full_gauges() 
-        return True # ⭐ 반환 값 추가: change_date_logic도 True/False 반환하도록
-    
-    def delete_historical_pet_record(self, index): # gui.py의 HistoricalPetViewerDialog와 연동
+        return True 
+        
+    def delete_historical_pet_record(self, index): 
         if 0 <= index < len(self.historical_pets):
             deleted_record = self.historical_pets.pop(index)
             print(f"과거 펫 기록 삭제됨: {deleted_record}")
             self.save_all_data()
             return True
         return False
-
 
 # --- 애플리케이션 실행 ---
 if __name__ == "__main__":
