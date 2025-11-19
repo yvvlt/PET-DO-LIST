@@ -30,7 +30,7 @@ class Pet:
         
         self.last_reset_date = last_reset_date if last_reset_date else datetime.date.today()
 
-        # ⭐⭐ 게이지 만점 보상 여부 추적용 속성 추가 ⭐⭐
+        # ⭐ 게이지 만점 보상 여부 추적용 속성 추가 ⭐
         self.has_been_rewarded_for_full_gauges = False
 
     def _get_image_path(self, species, level):
@@ -72,6 +72,6 @@ class Pet:
         self.fullness = INITIAL_PET_FULLNESS
         self.last_reset_date = datetime.date.today()
         self.image_path = self._get_image_path(self.species, self.level)
-        # ⭐⭐ 환생 시 보상 상태 플래그 초기화 ⭐⭐
+        # ⭐ 환생 시 보상 상태 플래그 초기화 ⭐
         self.has_been_rewarded_for_full_gauges = False
         print(f"{self.name}이가 새로운 모습으로 태어났어요!")
