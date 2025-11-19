@@ -6,7 +6,6 @@ from config import SNACK_PER_TODO_COMPLETE, INITIAL_SNACK_COUNTS, SNACK_EFFECTS
 class TodoManager:
     def __init__(self, initial_daily_todos=None, initial_snack_counts=None):
         # 날짜별 할 일 목록 초기화
-        # initial_daily_todos가 None이거나 비어있으면 오늘 날짜로 빈 리스트 시작
         self.daily_todos = initial_daily_todos if initial_daily_todos is not None else {}
         
         # 현재 보고 있는 날짜
@@ -22,7 +21,7 @@ class TodoManager:
                 self.snack_counts[snack_name] = 0
 
         print(f"TodoManager 초기화됨. 현재 날짜: {self.current_date}, 간식: {self.snack_counts}")
-        print(f"로드된 날짜별 할 일 목록 수: {len(self.daily_todos)}")
+        # print(f"로드된 날짜별 할 일 목록 수: {len(self.daily_todos)}") # 기존에 있던 부분인데 len(self.daily_todos)가 빈 경우 0으로 출력되므로 주석 처리 (선택)
 
 
     def set_current_date(self, new_date):
@@ -68,7 +67,10 @@ class TodoManager:
             if not current_day_todos[index]['completed']:
                 current_day_todos[index]['completed'] = True
                 todo_text = current_day_todos[index]['text']
-                self._give_snack_item("기본 간식", SNACK_PER_TODO_COMPLETE) # 기본 간식 지급
+                
+                # ⭐ _give_snack_item 대신 add_snack을 호출하도록 변경 ⭐
+                self.add_snack("기본 간식", SNACK_PER_TODO_COMPLETE) # 기본 간식 지급
+                
                 print(f"할 일 완료 ({self.current_date}): {todo_text}, 간식 지급: {SNACK_PER_TODO_COMPLETE}개")
                 return SNACK_PER_TODO_COMPLETE
             print(f"이미 완료된 할 일입니다 ({self.current_date}): {current_day_todos[index]['text']}")
@@ -76,16 +78,19 @@ class TodoManager:
         print(f"잘못된 인덱스입니다 ({self.current_date}): {index}")
         return 0
     
-    def _give_snack_item(self, snack_name, count):
+    # ⭐⭐ _give_snack_item 메서드의 이름을 add_snack으로 변경하고 공개 메서드로 사용 ⭐⭐
+    def add_snack(self, snack_name, count):
         """
-        내부적으로 특정 종류의 간식을 지급합니다.
+        지정된 이름의 간식을 지정된 개수만큼 추가합니다.
+        새로운 간식인 경우 초기화하고, 기존 간식인 경우 개수를 증가시킵니다.
         """
-        if snack_name in SNACK_EFFECTS:
+        if snack_name in SNACK_EFFECTS: # config에 정의된 간식만 추가하도록 제한
             self.snack_counts[snack_name] = self.snack_counts.get(snack_name, 0) + count
-            print(f"{snack_name} {count}개 획득! 현재 {snack_name} 개수: {self.snack_counts[snack_name]}")
+            print(f"'{snack_name}' {count}개 획득! 현재 {snack_name} 개수: {self.snack_counts[snack_name]}")
             return True
-        print(f"알 수 없는 간식 종류: {snack_name}")
+        print(f"알 수 없는 간식 종류여서 추가할 수 없습니다: {snack_name}")
         return False
+
 
     def use_snack(self, snack_name):
         """

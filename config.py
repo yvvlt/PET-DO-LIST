@@ -38,13 +38,14 @@ INITIAL_SNACK_COUNTS = { # 시작 시 주어지는 간식 개수
     "고급 간식": 1
 }
 
-# 간식별 효과 (행복도, 포만감) 및 아이콘 파일명
+# 간식별 효과 (행복도, 포만감) 및 아이콘 파일명 (요청에 따라 값 변경)
 SNACK_EFFECTS = {
-    "기본 간식": {"happiness": 10, "fullness": 10, "icon": "basic_snack_icon.png"},
-    "고급 간식": {"happiness": 25, "fullness": 25, "icon": "premium_snack_icon.png"}
+    "기본 간식": {"happiness": 20, "fullness": 20, "icon": "basic_snack_icon.png"}, # ⭐ 변경됨
+    "고급 간식": {"happiness": 50, "fullness": 50, "icon": "premium_snack_icon.png"} # ⭐ 변경됨
 }
-HAPPINESS_PER_SNACK = 10 # 기본 간식의 행복도 증가량 (예시)
-FULLNESS_PER_SNACK = 10   # 기본 간식의 포만감 증가량 (예시)
+# 이전에 개별 설정된 값은 이제 SNACK_EFFECTS 안에 있습니다.
+# HAPPINESS_PER_SNACK = 10 
+# FULLNESS_PER_SNACK = 10   
 
 
 # --- [4] 펫 환생(리셋) 관련 설정 ---
@@ -61,17 +62,17 @@ PET_RESET_INTERVAL_DAYS = 7 # 펫 환생 주기 (7일)
 WINDOW_WIDTH = 1000 
 WINDOW_HEIGHT = 800 
 BG_COLOR = "#e0e0e0" # 연한 회색 배경
-SECONDARY_TEXT_COLOR = "#471B1B" # 진한 회색 (거의 검정) 또는 #1a5276 (어두운 파랑) 등 선택 가능
-PRIMARY_COLOR = "#fec8b3" # 보라색 계열 (버튼, 제목 등에 사용)
-TEXT_BG_COLOR = "#d48d6f"
-ACCENT_COLOR = "#674334" # 주황-분홍 계열 (강조 색상)
+SECONDARY_TEXT_COLOR = "#471B1B" # 진한 회색
+PRIMARY_COLOR = "#fec8b3" # 연한 오렌지/피치 계열 (버튼, 제목 등에 사용)
+TEXT_BG_COLOR = "#d48d6f" # 사용되지 않는 것 같아 일단 유지
+ACCENT_COLOR = "#674334" # 주황-갈색 계열 (강조 색상)
 
-# ⭐⭐⭐ 여기에 폰트 설정 추가했습니다! ⭐⭐⭐
-MAIN_FONT_FAMILY = "맑은 고딕" # 또는 "나눔고딕", "Arial" 등 원하는 폰트 이름으로 변경 가능
-HEADING_FONT_SIZE_LARGE = 18 # 제목용 큰 글씨 크기 (예: "오늘 할 일", "간식 인벤토리")
-HEADING_FONT_SIZE_MEDIUM = 14 # 중간 제목용 글씨 크기 (예: 현재 날짜, 펫 종류)
-BODY_FONT_SIZE = 12          # 본문 및 리스트박스 글씨 크기
-BUTTON_FONT_SIZE = 10        # 버튼 글씨 크기
+# ⭐⭐ 폰트 설정 ⭐⭐
+MAIN_FONT_FAMILY = "맑은 고딕" 
+HEADING_FONT_SIZE_LARGE = 18 
+HEADING_FONT_SIZE_MEDIUM = 14 
+BODY_FONT_SIZE = 12          
+BUTTON_FONT_SIZE = 10        
 
 
 # --- [7] 로그 파일 설정 (미사용) ---
@@ -83,7 +84,15 @@ RESOURCES_PATH = "resources/" # 모든 리소스가 담길 기본 폴더
 PET_IMAGES_SUBFOLDER = "pet_images/"  # 펫 이미지 파일들이 들어갈 resources 하위 폴더
 ITEM_IMAGES_SUBFOLDER = "item_images/" # 아이템/간식 이미지 파일들이 들어갈 resources 하위 폴더
 ETC_SUBFOLDER = "etc/"               # 기타 이미지들이 들어갈 resources 하위 폴더
+# ⭐⭐ 사운드 리소스 경로 추가 ⭐⭐
+SOUNDS_SUBFOLDER = "sounds"
+
+# ⭐⭐ 효과음 파일 이름 정의 (실제 파일 이름에 맞춰 수정해주세요!) ⭐⭐
+SOUND_EFFECT_TODO_COMPLETE = "todo_complete.wav" 
+SOUND_EFFECT_SNACK_GIVE = "snack_eat.wav"     
+SOUND_EFFECT_PET_LEVEL_UP = "level_up.wav"    
+SOUND_EFFECT_PET_REBIRTH = "rebirth.wav"      
 
 
 # --- [9] 개발/디버깅 설정 ---
-DEBUG_MODE = True # 디버깅 메시지를 출력할지 여부
+DEBUG_MODE = True 

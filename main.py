@@ -4,13 +4,14 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox
 import datetime
 import random 
+import os # ⭐ os 모듈 임포트 추가 ⭐
+from playsound import playsound # ⭐ playsound 라이브러리 임포트 ⭐
 
-# 우리가 만든 모듈들 임포트
 import config
 from pet_manager import Pet
 from todo_manager import TodoManager
 import data_manager
-from gui import PetDoListGUI # gui.py에서 PetDoListGUI를 임포트합니다!
+from gui import PetDoListGUI
 
 class PetDoListApp:
     def __init__(self, master):
@@ -23,64 +24,41 @@ class PetDoListApp:
 
         self.pet = None
         self.todo_manager = None
-        self.historical_pets = [] # ⭐ 새로 추가: 과거 펫 기록 리스트 초기화
+        self.historical_pets = [] 
 
-        # --- GUI 인스턴스 생성 ---
-        self.gui = PetDoListGUI(master, self) # 이제 gui가 app_logic(self)를 통해 historical_pets에 접근할 수 있습니다.
+        # ⭐⭐ self.gui 초기화 순서를 _pre_gui_setup() 보다 앞으로! ⭐⭐
+        self.gui = PetDoListGUI(master, self) 
         
-        # --- 데이터 초기화 및 펫 환생 체크 ---
-        self._pre_gui_setup() 
-
-        # --- 초기 GUI 상태 업데이트 ---
-        self.gui.update_gui_with_pet_data()
-
-
-        # ⭐⭐ 펫 기록 삭제 메서드 추가 ⭐⭐
-    def delete_historical_pet_record(self, index):
-        """
-        주어진 인덱스에 해당하는 과거 펫 기록을 삭제하고 데이터를 저장합니다.
-        """
-        if 0 <= index < len(self.historical_pets):
-            deleted_record = self.historical_pets.pop(index) # 리스트에서 해당 인덱스의 기록을 삭제
-            print(f"과거 펫 기록 삭제됨: {deleted_record}")
-            self.save_all_data() # 변경된 기록을 파일에 저장
-            return True
-        return False
-
+        self._pre_gui_setup() # 이제 _pre_gui_setup() 내부에서 self.gui를 안전하게 사용할 수 있습니다.
+        
+        self.gui.update_gui_with_pet_data() # 데이터 로드/초기화 후 GUI를 업데이트합니다.
 
     def _pre_gui_setup(self):
         """GUI를 생성하기 전에 데이터 로드, 펫 초기화, 환생 체크를 수행합니다."""
-        # ⭐ data_manager.load_data()에서 historical_pets도 함께 로드합니다.
         loaded_pet, loaded_daily_todos, loaded_snack_counts, loaded_historical_pets = data_manager.load_data() 
 
         if loaded_pet and loaded_daily_todos is not None and loaded_snack_counts and loaded_historical_pets is not None:
-            # 저장된 데이터가 있을 경우 로드
             self.pet = loaded_pet
             self.todo_manager = TodoManager(initial_daily_todos=loaded_daily_todos, initial_snack_counts=loaded_snack_counts)
-            self.historical_pets = loaded_historical_pets # ⭐ 과거 펫 기록 로드
+            self.historical_pets = loaded_historical_pets 
             print("기존 데이터를 성공적으로 로드했습니다.")
         else:
-            # 저장된 데이터가 없거나 유효하지 않을 경우 새로 생성
             print("새로운 데이터를 초기화합니다.")
             self.create_initial_pet_and_data_via_dialog() 
-            # ⭐ 새로운 데이터를 생성할 때 historical_pets는 빈 리스트로 유지됩니다.
 
-        # 펫이 로드되거나 새로 생성된 후, 주간 환생 체크
         self.check_weekly_reset()
 
     def create_initial_pet_and_data_via_dialog(self):
         """새로운 펫과 데이터를 생성하고 사용자에게 이름/종류를 팝업으로 입력받습니다."""
         
-        # 1. 펫 이름 입력 받기
         pet_name = simpledialog.askstring("펫 이름", "새로운 펫의 이름을 지어주세요:", parent=self.master)
         if not pet_name or pet_name.strip() == "":
             pet_name = config.INITIAL_PET_NAME 
         
-        # 2. 펫 종류 선택 받기 (버튼으로 선택하도록 변경)
         selected_species = self.gui.show_pet_species_selection(config.PET_SPECIES_LIST, "새 펫 종류 선택")
 
-        if selected_species is None: # 사용자가 팝업을 닫았거나 선택하지 않은 경우
-            selected_species = config.PET_SPECIES_LIST[0] # 기본값으로 첫 번째 종 사용
+        if selected_species is None: 
+            selected_species = config.PET_SPECIES_LIST[0] 
             messagebox.showinfo("알림", f"펫 종류를 선택하지 않아 '{selected_species}' 펫으로 시작합니다.", parent=self.master)
 
 
@@ -98,7 +76,7 @@ class PetDoListApp:
             is_reset_day_and_time = (today.weekday() == config.WEEKLY_RESET_DAY and datetime.datetime.now().hour >= config.RESET_TIME_HOUR)
 
             if today != self.pet.last_reset_date and is_reset_day_and_time:
-                if days_since_reset >= config.PET_RESET_INTERVAL_DAYS or self.pet.last_reset_date.weekday() != config.WEEKLY_RESET_DAY: # ⭐ PET_RESET_INTERVAL_DAYS 사용
+                if days_since_reset >= config.PET_RESET_INTERVAL_DAYS or self.pet.last_reset_date.weekday() != config.WEEKLY_RESET_DAY: 
                     print("펫 환생 조건 충족! 새로운 펫을 맞이합니다.")
                     if messagebox.askyesno("펫 환생 알림", f"이번 주 ({self.pet.last_reset_date} ~ {today})의 여정이 끝났습니다!\n새로운 펫으로 환생하시겠어요?", parent=self.master):
                         self.perform_rebirth_via_dialog()
@@ -108,7 +86,6 @@ class PetDoListApp:
     def _record_current_pet_history(self):
         """현재 펫의 최종 상태를 역사 기록에 추가합니다."""
         if self.pet:
-            # ⭐ 펫의 생존 기간을 계산합니다.
             end_date = datetime.date.today()
             start_date = self.pet.last_reset_date
             
@@ -126,21 +103,16 @@ class PetDoListApp:
         """펫을 환생시키고 초기 데이터를 재설정하며 사용자에게 입력받습니다."""
         print("펫 환생을 시작합니다!")
         
-        # ⭐ 현재 펫의 기록을 남깁니다. (새로운 펫이 생성되기 전에 호출)
         self._record_current_pet_history()
 
-        #self.historical_pets = [] #강제환생 시 펫 기록 초기화. 이건 실험용. 실행시에는 주석처리
-
-        # 새 펫 이름 입력
         new_pet_name = simpledialog.askstring("펫 환생!", f"이전 펫 '{self.pet.name}'이 환생했습니다! 새로운 펫의 이름을 지어주세요:", parent=self.master)
         if not new_pet_name or new_pet_name.strip() == "":
             new_pet_name = config.INITIAL_PET_NAME 
         
-        # 새 펫 종류 선택 (버튼으로 선택하도록 변경)
         selected_new_species = self.gui.show_pet_species_selection(config.PET_SPECIES_LIST, "새로운 펫 종류 선택")
 
-        if selected_new_species is None: # 사용자가 팝업을 닫았거나 선택하지 않은 경우
-            selected_new_species = config.PET_SPECIES_LIST[0] # 기본값으로 첫 번째 종 사용
+        if selected_new_species is None: 
+            selected_new_species = config.PET_SPECIES_LIST[0] 
             messagebox.showinfo("알림", f"펫 종류를 선택하지 않아 '{selected_new_species}' 펫으로 다시 태어납니다.", parent=self.master)
             
         self.pet.name = new_pet_name 
@@ -149,6 +121,7 @@ class PetDoListApp:
         messagebox.showinfo("펫 환생 완료!", f"'{self.pet.name}' ({self.pet.species})으로 새롭게 태어났습니다! 환영해주세요!", parent=self.master)
         self.gui.update_gui_with_pet_data() 
         self.save_all_data()
+        self.play_sound(config.SOUND_EFFECT_PET_REBIRTH) # ⭐ 환생 효과음 재생 ⭐
 
     def on_closing(self):
         """애플리케이션 종료 시 데이터를 저장하고 윈도우를 닫습니다."""
@@ -158,17 +131,63 @@ class PetDoListApp:
     def save_all_data(self):
         """현재 모든 데이터를 저장합니다."""
         if self.pet and self.todo_manager:
-            # ⭐ save_data 함수에 historical_pets 데이터를 전달합니다.
             data_manager.save_data(self.pet, self.todo_manager.get_daily_todos_data(), self.todo_manager.get_current_snack_counts(), self.historical_pets)
             print("애플리케이션 종료 전 데이터 저장 완료.")
         else:
             print("저장할 데이터가 없어 저장을 건너뜁니다.")
 
+    # ⭐⭐ 소리 재생 헬퍼 함수 추가 ⭐⭐
+    def play_sound(self, sound_file_name):
+        """
+        지정된 효과음 파일을 재생합니다.
+        경로: resources/sounds/sound_file_name
+        """
+        sound_path = os.path.join(config.RESOURCES_PATH, config.SOUNDS_SUBFOLDER, sound_file_name)
+        if os.path.exists(sound_path):
+            try:
+                # playsound는 비동기 재생을 기본으로 하지만, 경우에 따라 블로킹될 수 있습니다.
+                # GUI가 멈추는 것을 방지하기 위해 playsound를 별도의 스레드에서 실행하는 것이 좋지만,
+                # 여기서는 간단한 구현을 위해 직접 호출합니다. 필요시 개선 가능합니다.
+                playsound(sound_path) 
+            except Exception as e:
+                print(f"사운드 재생 실패 ({sound_path}): {e}")
+        else:
+            print(f"사운드 파일 '{sound_path}'을 찾을 수 없습니다.")
+            
+    # ⭐⭐ 게이지 만점 체크 및 보상 메서드 추가 ⭐⭐
+    def _check_and_reward_full_gauges(self):
+        """
+        펫의 행복도와 포만감 게이지가 모두 최대일 경우,
+        아직 보상을 받지 않았다면 고급 간식을 지급합니다.
+        게이지가 최대가 아닐 경우 보상 상태를 리셋합니다.
+        """
+        if not self.pet:
+            return
+
+        is_full_happiness = (self.pet.happiness >= self.pet.max_happiness)
+        is_full_fullness = (self.pet.fullness >= self.pet.max_fullness)
+
+        if is_full_happiness and is_full_fullness:
+            if not self.pet.has_been_rewarded_for_full_gauges:
+                # ⭐ 고급 간식 지급 ⭐
+                self.todo_manager.add_snack("고급 간식", 1)
+                self.pet.has_been_rewarded_for_full_gauges = True # 보상 지급 플래그 설정
+                
+                messagebox.showinfo("특별 보상!", f"'{self.pet.name}'(이)가 행복하고 포만감이 가득찼습니다!\n축하합니다! 고급 간식 1개를 획득했습니다!", parent=self.master)
+                self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP) # 레벨업 사운드 재활용 (새로운 사운드를 원하면 config에 추가)
+                self.gui.update_gui_with_pet_data()
+                self.save_all_data()
+                print("고급 간식 1개 지급!")
+        else:
+            # 게이지가 만점이 아니면 다음번에 만점이 되었을 때 다시 보상받을 수 있도록 플래그 리셋
+            self.pet.has_been_rewarded_for_full_gauges = False
+            
     # --- GUI 이벤트 핸들러 (PetDoListGUI에서 호출될 실제 로직) ---
     def add_todo_logic(self, todo_text):
         if self.todo_manager.add_todo(todo_text): 
             self.gui.update_gui_with_pet_data()
             self.save_all_data() 
+            self._check_and_reward_full_gauges() # ⭐ 할 일 추가 후 체크 ⭐
             return True
         return False
 
@@ -180,9 +199,20 @@ class PetDoListApp:
 
             snack_reward_count = self.todo_manager.complete_todo(index) 
             if snack_reward_count > 0:
-                self.pet.add_exp(amount=config.EXP_PER_TODO_COMPLETE) 
+                # 펫 경험치 추가 (레벨업 여부 반환)
+                leveled_up = self.pet.add_exp(amount=config.EXP_PER_TODO_COMPLETE) 
+                
+                # ⭐ 할 일 완료 효과음 재생 ⭐
+                self.play_sound(config.SOUND_EFFECT_TODO_COMPLETE)
+
+                if leveled_up:
+                    # ⭐ 펫 레벨업 효과음 재생 ⭐
+                    self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP)
+                    messagebox.showinfo("레벨업!", f"'{self.pet.name}'이(가) 레벨 {self.pet.level}로 성장했습니다!", parent=self.master)
+
                 self.gui.update_gui_with_pet_data() 
                 self.save_all_data() 
+                self._check_and_reward_full_gauges() # ⭐ 할 일 완료 후 체크 ⭐
                 return True
         messagebox.showerror("오류", "할 일 완료 처리에 실패했습니다.", parent=self.master)
         return False
@@ -193,31 +223,44 @@ class PetDoListApp:
                 self.todo_manager.remove_todo(index)
                 self.gui.update_gui_with_pet_data()
                 self.save_all_data() 
+                self._check_and_reward_full_gauges() # ⭐ 할 일 삭제 후 체크 ⭐
                 return True
         return False
 
     def give_snack_to_pet(self, snack_name):
+        # ⭐⭐ 간식 주기 전 펫 상태 확인 (게이지 만점 시 간식 소모 방지) ⭐⭐
+        if self.pet.happiness >= self.pet.max_happiness and self.pet.fullness >= self.pet.max_fullness:
+            messagebox.showinfo("알림", f"'{self.pet.name}'(이)는 이미 행복하고 배불러서 더 이상 간식을 먹을 수 없어요! 조금 쉬게 해주세요 :)", parent=self.master)
+            return False # 간식을 주지 않고 종료
+
         effect = self.todo_manager.use_snack(snack_name)
         if effect:
             self.pet.give_snack(effect)
+            # ⭐ 간식 주기 효과음 재생 ⭐
+            self.play_sound(config.SOUND_EFFECT_SNACK_GIVE)
             self.gui.update_gui_with_pet_data() 
             self.save_all_data() 
+            self._check_and_reward_full_gauges() # ⭐ 간식 준 후 체크 ⭐
             return True
         else:
             messagebox.showinfo("알림", f"'{snack_name}' 간식이 없거나 부족합니다.", parent=self.master)
             return False
 
     def change_date_logic(self, delta_days):
-        """
-        현재 표시되는 할 일의 날짜를 변경합니다.
-        Args:
-            delta_days (int): 현재 날짜로부터 이동할 일 수 (예: -1은 하루 전, 1은 하루 후).
-        """
         current_display_date = self.todo_manager.get_current_date()
         new_display_date = current_display_date + datetime.timedelta(days=delta_days)
         self.todo_manager.set_current_date(new_display_date)
         self.gui.update_gui_with_pet_data() 
         print(f"날짜 변경: {current_display_date} -> {new_display_date}")
+        self._check_and_reward_full_gauges() # ⭐ 날짜 변경 후에도 체크 (선택 사항) ⭐
+
+    def delete_historical_pet_record(self, index): # gui.py의 HistoricalPetViewerDialog와 연동
+        if 0 <= index < len(self.historical_pets):
+            deleted_record = self.historical_pets.pop(index)
+            print(f"과거 펫 기록 삭제됨: {deleted_record}")
+            self.save_all_data()
+            return True
+        return False
 
 
 # --- 애플리케이션 실행 ---
