@@ -5,7 +5,7 @@ import datetime
 # --- [1] 애플리케이션 기본 설정 ---
 APP_TITLE = "Pet-Do-List: 환생 펫 투두리스트"  # 애플리케이션 창의 제목. (main.py)
 DATA_FILE_NAME = "pet_do_list_data.pkl"     # 데이터 저장 파일명. (data_manager.py)
-INITIAL_PET_NAME = "펫"                 # 펫 이름 미입력 시 기본값. (main.py, pet_manager.py)
+INITIAL_PET_NAME = "새 친구"                 # 펫 이름 미입력 시 기본값. (main.py, pet_manager.py)
 
 # --- [2] 펫 성장 관련 설정 ---
 PET_SPECIES_LIST = ["사람", "나무", "고양이"] # 선택 가능한 펫 종류 목록. (main.py, pet_manager.py, gui.py)
@@ -73,7 +73,11 @@ BODY_FONT_SIZE = 12
 BUTTON_FONT_SIZE = 10        
 
 
-# --- [7] 리소스 파일 경로 설정 ---
+# --- [7] 로그 파일 설정 (미사용) ---
+# LOG_FILE = "app_log.txt" # 로그 파일명 예시
+
+
+# --- [8] 리소스 파일 경로 설정 ---
 RESOURCES_PATH = "resources/"          # 모든 리소스 파일의 기본 폴더 경로. (main.py, gui.py)
 PET_IMAGES_SUBFOLDER = "pet_images/"   # 펫 이미지 하위 폴더.
 ITEM_IMAGES_SUBFOLDER = "item_images/" # 아이템/간식 이미지 하위 폴더.
@@ -97,5 +101,5 @@ SFX_VOLUME_PET_LEVEL_UP = 0.1
 SFX_VOLUME_PET_REBIRTH = 0.1
 
 
-# --- [8] 개발/디버깅 설정 ---
+# --- [9] 개발/디버깅 설정 ---
 DEBUG_MODE = True # 디버그 모드 활성화 여부. (print문 출력 등)

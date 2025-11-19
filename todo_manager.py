@@ -1,10 +1,10 @@
 # todo_manager.py
 
-# 사용자의 할 일(Todo) 목록과 간식 인벤토리를 관리하는 모듈.
-# 날짜별 할 일 추가, 삭제, 완료 처리 및 간식 획득, 사용 등의 로직을 담당.
+# 사용자의 할 일(Todo) 목록과 간식 인벤토리를 관리하는 모듈입니다.
+# 날짜별 할 일 추가, 삭제, 완료 처리 및 간식 획득, 사용 등의 로직을 담당합니다.
 
 import datetime # 날짜 객체 처리에 사용.
-# config.py에서 간식 관련 상수들을 임포트.
+# config.py에서 간식 관련 상수들을 임포트합니다.
 from config import SNACK_PER_TODO_COMPLETE, INITIAL_SNACK_COUNTS, SNACK_EFFECTS
 
 class TodoManager:

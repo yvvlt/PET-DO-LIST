@@ -1,7 +1,7 @@
 # gui.py
 
-# 애플리케이션의 사용자 인터페이스(GUI)를 구성하고 관리하는 모듈.
-# Tkinter 위젯을 사용하여 화면을 그리고, main.py의 PetDoListApp과 상호작용.
+# 애플리케이션의 사용자 인터페이스(GUI)를 구성하고 관리하는 모듈입니다.
+# Tkinter 위젯을 사용하여 화면을 그리고, main.py의 PetDoListApp과 상호작용합니다.
 
 import tkinter as tk      # Tkinter GUI 라이브러리.
 from tkinter import ttk   # Tkinter의 테마 위젯 (예: Progressbar).
@@ -13,7 +13,7 @@ import datetime           # 날짜/시간 객체.
 import config             # 애플리케이션 설정 값 임포트.
 
 # === 펫 종류 선택 모달 다이얼로그 클래스 ===
-# 펫을 생성하거나 환생할 때 사용자에게 펫 종류를 선택하도록 하는 팝업 창.
+# 펫을 생성하거나 환생할 때 사용자에게 펫 종류를 선택하도록 하는 팝업 창입니다.
 class PetSpeciesSelectionDialog(tk.Toplevel):
     def __init__(self, parent, species_list, title="펫 종류 선택"):
         super().__init__(parent)
@@ -62,8 +62,8 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         
 
 # === 과거 펫 기록 보기 다이얼로그 클래스 ===
-# 사용자가 성장시켰던 과거 펫들의 기록을 보여주는 팝업 창.
-# 각 기록에 대한 이미지와 정보, 삭제 버튼을 포함.
+# 사용자가 성장시켰던 과거 펫들의 기록을 보여주는 팝업 창입니다.
+# 각 기록에 대한 이미지와 정보, 삭제 버튼을 포함합니다.
 class HistoricalPetViewerDialog(tk.Toplevel):
     def __init__(self, parent, historical_pets, pet_image_loader_func, app_logic, title="펫 기록 보기"): 
         super().__init__(parent)
@@ -174,7 +174,7 @@ class HistoricalPetViewerDialog(tk.Toplevel):
 
 
 # === 주 애플리케이션 GUI 클래스 ===
-# Pet-Do-List 앱의 메인 GUI를 생성하고 관리하는 클래스.
+# Pet-Do-List 앱의 메인 GUI를 생성하고 관리하는 클래스입니다.
 class PetDoListGUI:
     def __init__(self, master, app_logic):
         self.master = master     # Tkinter 루트(메인) 창.
@@ -219,7 +219,7 @@ class PetDoListGUI:
         # 펫 기록/환생 버튼들을 담을 프레임.
         self.action_buttons_row_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR, bd=0, highlightthickness=0) 
         self.view_history_button = tk.Button(self.action_buttons_row_frame, text="펫 기록 보기", command=self.show_pet_history, font=(config.MAIN_FONT_FAMILY, config.BUTTON_FONT_SIZE, "bold"), bg=config.ACCENT_COLOR, fg="white")
-        self.rebirth_button = tk.Button(self.action_buttons_row_frame, text="강제 환생 (테스트)", command=self.app_logic.perform_rebirth_via_dialog, font=(config.MAIN_FONT_FAMILY, config.BUTTON_FONT_SIZE), bg="lightgray")
+        self.rebirth_button = tk.Button(self.action_buttons_row_frame, text="강제 환생 (초기화)", command=self.app_logic.perform_rebirth_via_dialog, font=(config.MAIN_FONT_FAMILY, config.BUTTON_FONT_SIZE), bg="lightgray")
 
 
         # --- 2. 우측 패널 (투두리스트 및 간식 인벤토리) ---
@@ -320,6 +320,7 @@ class PetDoListGUI:
         image_path_key = f"{image_filename}_{size[0]}x{size[1]}" # 캐시 키 생성 (파일명 + 크기).
         
         if image_path_key not in self.pet_image_cache: # 캐시에 없는 이미지일 경우.
+            full_path = ""
             try:
                 # 이미지 파일의 전체 경로 생성 및 이미지 로드, 리사이즈.
                 full_path = os.path.join(config.RESOURCES_PATH, config.PET_IMAGES_SUBFOLDER, image_filename)

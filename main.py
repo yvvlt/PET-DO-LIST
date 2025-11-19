@@ -1,8 +1,8 @@
 # main.py
 
-# 애플리케이션의 메인 진입점(Entry Point)이자 핵심 로직을 담당하는 파일.
+# 애플리케이션의 메인 진입점(Entry Point)이자 핵심 로직을 담당하는 파일입니다.
 # GUI 생성 및 관리, 데이터 로드/저장, 펫 상태 및 할 일 관리, 사운드 재생 등
-# 앱의 전반적인 흐름을 제어하고 각 모듈들을 연결하는 역할.
+# 앱의 전반적인 흐름을 제어하고 각 모듈들을 연결하는 역할을 합니다.
 
 import tkinter as tk            # Tkinter GUI 라이브러리.
 from tkinter import simpledialog, messagebox # 사용자 입력 다이얼로그, 알림창.
@@ -99,7 +99,7 @@ class PetDoListApp:
             self.historical_pets = loaded_historical_pets 
             print("기존 데이터를 성공적으로 로드했습니다.")
         else:
-            # 데이터가 없거나 로드에 실패하면 새로운 펫과 데이터를 생성.
+            # 데이터가 없거나 로드에 실패하면 새로운 펫과 데이터를 생성합니다.
             print("새로운 데이터를 초기화합니다.")
             self.create_initial_pet_and_data_via_dialog() 
 
