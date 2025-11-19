@@ -73,11 +73,7 @@ BODY_FONT_SIZE = 12
 BUTTON_FONT_SIZE = 10        
 
 
-# --- [7] 로그 파일 설정 (미사용) ---
-# LOG_FILE = "app_log.txt" # 로그 파일명 예시
-
-
-# --- [8] 리소스 파일 경로 설정 ---
+# --- [7] 리소스 파일 경로 설정 ---
 RESOURCES_PATH = "resources/"          # 모든 리소스 파일의 기본 폴더 경로. (main.py, gui.py)
 PET_IMAGES_SUBFOLDER = "pet_images/"   # 펫 이미지 하위 폴더.
 ITEM_IMAGES_SUBFOLDER = "item_images/" # 아이템/간식 이미지 하위 폴더.
@@ -101,5 +97,5 @@ SFX_VOLUME_PET_LEVEL_UP = 0.1
 SFX_VOLUME_PET_REBIRTH = 0.1
 
 
-# --- [9] 개발/디버깅 설정 ---
+# --- [8] 개발/디버깅 설정 ---
 DEBUG_MODE = True # 디버그 모드 활성화 여부. (print문 출력 등)
