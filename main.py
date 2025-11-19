@@ -4,14 +4,14 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox
 import datetime
 import random 
-import os # ⭐ os 모듈 임포트 추가 ⭐
-from playsound import playsound # ⭐ playsound 라이브러리 임포트 ⭐
+import os 
+from playsound import playsound 
 
 import config
 from pet_manager import Pet
 from todo_manager import TodoManager
 import data_manager
-from gui import PetDoListGUI
+from gui import PetDoListGUI # gui 모듈을 여기에서 임포트합니다.
 
 class PetDoListApp:
     def __init__(self, master):
@@ -26,12 +26,12 @@ class PetDoListApp:
         self.todo_manager = None
         self.historical_pets = [] 
 
-        # ⭐⭐ self.gui 초기화 순서를 _pre_gui_setup() 보다 앞으로! ⭐⭐
+        # ⭐ self.gui 초기화 순서를 _pre_gui_setup() 보다 앞으로! ⭐
         self.gui = PetDoListGUI(master, self) 
         
-        self._pre_gui_setup() # 이제 _pre_gui_setup() 내부에서 self.gui를 안전하게 사용할 수 있습니다.
+        self._pre_gui_setup() 
         
-        self.gui.update_gui_with_pet_data() # 데이터 로드/초기화 후 GUI를 업데이트합니다.
+        self.gui.update_gui_with_pet_data() 
 
     def _pre_gui_setup(self):
         """GUI를 생성하기 전에 데이터 로드, 펫 초기화, 환생 체크를 수행합니다."""
@@ -134,9 +134,9 @@ class PetDoListApp:
             data_manager.save_data(self.pet, self.todo_manager.get_daily_todos_data(), self.todo_manager.get_current_snack_counts(), self.historical_pets)
             print("애플리케이션 종료 전 데이터 저장 완료.")
         else:
-            print("저장할 데이터가 없어 저장을 건너뜁니다.")
+            print("저장할 데이터가 없어 저장을 건너뛰는 작업을 수행하고 있어요.")
 
-    # ⭐⭐ 소리 재생 헬퍼 함수 추가 ⭐⭐
+    # ⭐ 소리 재생 헬퍼 함수 추가 ⭐
     def play_sound(self, sound_file_name):
         """
         지정된 효과음 파일을 재생합니다.
@@ -145,16 +145,13 @@ class PetDoListApp:
         sound_path = os.path.join(config.RESOURCES_PATH, config.SOUNDS_SUBFOLDER, sound_file_name)
         if os.path.exists(sound_path):
             try:
-                # playsound는 비동기 재생을 기본으로 하지만, 경우에 따라 블로킹될 수 있습니다.
-                # GUI가 멈추는 것을 방지하기 위해 playsound를 별도의 스레드에서 실행하는 것이 좋지만,
-                # 여기서는 간단한 구현을 위해 직접 호출합니다. 필요시 개선 가능합니다.
                 playsound(sound_path) 
             except Exception as e:
                 print(f"사운드 재생 실패 ({sound_path}): {e}")
         else:
             print(f"사운드 파일 '{sound_path}'을 찾을 수 없습니다.")
             
-    # ⭐⭐ 게이지 만점 체크 및 보상 메서드 추가 ⭐⭐
+    # ⭐ 게이지 만점 체크 및 보상 메서드 추가 ⭐
     def _check_and_reward_full_gauges(self):
         """
         펫의 행복도와 포만감 게이지가 모두 최대일 경우,
@@ -170,16 +167,15 @@ class PetDoListApp:
         if is_full_happiness and is_full_fullness:
             if not self.pet.has_been_rewarded_for_full_gauges:
                 # ⭐ 고급 간식 지급 ⭐
-                self.todo_manager.add_snack("고급 간식", 1)
+                self.todo_manager.add_snack("고급 간식", 1) 
                 self.pet.has_been_rewarded_for_full_gauges = True # 보상 지급 플래그 설정
                 
                 messagebox.showinfo("특별 보상!", f"'{self.pet.name}'(이)가 행복하고 포만감이 가득찼습니다!\n축하합니다! 고급 간식 1개를 획득했습니다!", parent=self.master)
-                self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP) # 레벨업 사운드 재활용 (새로운 사운드를 원하면 config에 추가)
+                self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP) 
                 self.gui.update_gui_with_pet_data()
                 self.save_all_data()
                 print("고급 간식 1개 지급!")
         else:
-            # 게이지가 만점이 아니면 다음번에 만점이 되었을 때 다시 보상받을 수 있도록 플래그 리셋
             self.pet.has_been_rewarded_for_full_gauges = False
             
     # --- GUI 이벤트 핸들러 (PetDoListGUI에서 호출될 실제 로직) ---
@@ -187,7 +183,7 @@ class PetDoListApp:
         if self.todo_manager.add_todo(todo_text): 
             self.gui.update_gui_with_pet_data()
             self.save_all_data() 
-            self._check_and_reward_full_gauges() # ⭐ 할 일 추가 후 체크 ⭐
+            self._check_and_reward_full_gauges() 
             return True
         return False
 
@@ -199,20 +195,17 @@ class PetDoListApp:
 
             snack_reward_count = self.todo_manager.complete_todo(index) 
             if snack_reward_count > 0:
-                # 펫 경험치 추가 (레벨업 여부 반환)
                 leveled_up = self.pet.add_exp(amount=config.EXP_PER_TODO_COMPLETE) 
                 
-                # ⭐ 할 일 완료 효과음 재생 ⭐
-                self.play_sound(config.SOUND_EFFECT_TODO_COMPLETE)
+                self.play_sound(config.SOUND_EFFECT_TODO_COMPLETE) 
 
                 if leveled_up:
-                    # ⭐ 펫 레벨업 효과음 재생 ⭐
-                    self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP)
+                    self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP) 
                     messagebox.showinfo("레벨업!", f"'{self.pet.name}'이(가) 레벨 {self.pet.level}로 성장했습니다!", parent=self.master)
 
                 self.gui.update_gui_with_pet_data() 
                 self.save_all_data() 
-                self._check_and_reward_full_gauges() # ⭐ 할 일 완료 후 체크 ⭐
+                self._check_and_reward_full_gauges() 
                 return True
         messagebox.showerror("오류", "할 일 완료 처리에 실패했습니다.", parent=self.master)
         return False
@@ -223,24 +216,22 @@ class PetDoListApp:
                 self.todo_manager.remove_todo(index)
                 self.gui.update_gui_with_pet_data()
                 self.save_all_data() 
-                self._check_and_reward_full_gauges() # ⭐ 할 일 삭제 후 체크 ⭐
+                self._check_and_reward_full_gauges() 
                 return True
         return False
 
     def give_snack_to_pet(self, snack_name):
-        # ⭐⭐ 간식 주기 전 펫 상태 확인 (게이지 만점 시 간식 소모 방지) ⭐⭐
         if self.pet.happiness >= self.pet.max_happiness and self.pet.fullness >= self.pet.max_fullness:
             messagebox.showinfo("알림", f"'{self.pet.name}'(이)는 이미 행복하고 배불러서 더 이상 간식을 먹을 수 없어요! 조금 쉬게 해주세요 :)", parent=self.master)
-            return False # 간식을 주지 않고 종료
+            return False 
 
         effect = self.todo_manager.use_snack(snack_name)
         if effect:
             self.pet.give_snack(effect)
-            # ⭐ 간식 주기 효과음 재생 ⭐
-            self.play_sound(config.SOUND_EFFECT_SNACK_GIVE)
+            self.play_sound(config.SOUND_EFFECT_SNACK_GIVE) 
             self.gui.update_gui_with_pet_data() 
             self.save_all_data() 
-            self._check_and_reward_full_gauges() # ⭐ 간식 준 후 체크 ⭐
+            self._check_and_reward_full_gauges() 
             return True
         else:
             messagebox.showinfo("알림", f"'{snack_name}' 간식이 없거나 부족합니다.", parent=self.master)
@@ -252,8 +243,9 @@ class PetDoListApp:
         self.todo_manager.set_current_date(new_display_date)
         self.gui.update_gui_with_pet_data() 
         print(f"날짜 변경: {current_display_date} -> {new_display_date}")
-        self._check_and_reward_full_gauges() # ⭐ 날짜 변경 후에도 체크 (선택 사항) ⭐
-
+        self._check_and_reward_full_gauges() 
+        return True # ⭐ 반환 값 추가: change_date_logic도 True/False 반환하도록
+    
     def delete_historical_pet_record(self, index): # gui.py의 HistoricalPetViewerDialog와 연동
         if 0 <= index < len(self.historical_pets):
             deleted_record = self.historical_pets.pop(index)
