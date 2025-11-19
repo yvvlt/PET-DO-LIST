@@ -1,97 +1,68 @@
-# todo_manager.py
+# data_manager.py
 
+import pickle
+import os 
 import datetime 
-from config import SNACK_PER_TODO_COMPLETE, INITIAL_SNACK_COUNTS, SNACK_EFFECTS
 
-class TodoManager:
-    def __init__(self, initial_daily_todos=None, initial_snack_counts=None):
-        self.daily_todos = initial_daily_todos if initial_daily_todos is not None else {}
-        
-        self.current_date = datetime.date.today()
-        if self.current_date not in self.daily_todos:
-            self.daily_todos[self.current_date] = []
+from config import DATA_FILE_NAME 
 
-        self.snack_counts = initial_snack_counts if initial_snack_counts else INITIAL_SNACK_COUNTS.copy()
-        for snack_name in SNACK_EFFECTS:
-            if snack_name not in self.snack_counts:
-                self.snack_counts[snack_name] = 0
+def save_data(pet_data, daily_todos, snack_counts, historical_pets):
+    """
+    현재 펫 데이터, 날짜별 할 일 목록, 간식 개수, 그리고 과거 펫 기록을 파일에 저장합니다.
+    Args:
+        pet_data (Pet object): 현재 펫 객체 인스턴스.
+        daily_todos (dict): 날짜(datetime.date 객체)를 키로 하고, 해당 날짜의 할 일 목록(list)을 값으로 하는 딕셔너리.
+        snack_counts (dict): 간식 종류별 개수를 담은 딕셔너리.
+        historical_pets (list): 과거 펫 기록을 담은 리스트. 각 요소는 딕셔너리로 {species, level, start_date, end_date} 등을 포함.
+    """
+    data_to_save = {
+        'pet': pet_data,
+        'daily_todos': daily_todos,
+        'snack_counts': snack_counts,
+        'historical_pets': historical_pets 
+    }
+    try:
+        with open(DATA_FILE_NAME, 'wb') as f: 
+            pickle.dump(data_to_save, f)
+        print(f"데이터가 '{DATA_FILE_NAME}'에 성공적으로 저장되었습니다.")
+    except Exception as e:
+        print(f"데이터 저장 중 오류 발생: {e}")
 
-        print(f"TodoManager 초기화됨. 현재 날짜: {self.current_date}, 간식: {self.snack_counts}")
-        
-
-    def set_current_date(self, new_date):
-        if not isinstance(new_date, datetime.date):
-            raise TypeError("날짜는 datetime.date 객체여야 합니다.")
-        
-        self.current_date = new_date
-        if self.current_date not in self.daily_todos:
-            self.daily_todos[self.current_date] = []
-        print(f"현재 할 일 확인 날짜 변경: {self.current_date}")
-
-    def add_todo(self, todo_text):
-        if not isinstance(todo_text, str) or not todo_text.strip():
-            print("유효하지 않은 할 일 내용입니다.")
-            return False
-        
-        self.daily_todos[self.current_date].append({'text': todo_text.strip(), 'completed': False})
-        print(f"할 일 추가 ({self.current_date}): {todo_text.strip()}")
-        return True
-
-    def remove_todo(self, index):
-        current_day_todos = self.daily_todos.get(self.current_date, [])
-        if 0 <= index < len(current_day_todos):
-            removed_todo = current_day_todos.pop(index)
-            print(f"할 일 삭제 ({self.current_date}): {removed_todo['text']}")
-            return removed_todo
-        print(f"잘못된 인덱스입니다 ({self.current_date}): {index}")
-        return None
-
-    def complete_todo(self, index):
-        current_day_todos = self.daily_todos.get(self.current_date, [])
-        if 0 <= index < len(current_day_todos):
-            if not current_day_todos[index]['completed']:
-                current_day_todos[index]['completed'] = True
-                todo_text = current_day_todos[index]['text']
-                
-                self.add_snack("기본 간식", SNACK_PER_TODO_COMPLETE) 
-                
-                print(f"할 일 완료 ({self.current_date}): {todo_text}, 간식 지급: {SNACK_PER_TODO_COMPLETE}개")
-                return SNACK_PER_TODO_COMPLETE
-            print(f"이미 완료된 할 일입니다 ({self.current_date}): {current_day_todos[index]['text']}")
-            return 0
-        print(f"잘못된 인덱스입니다 ({self.current_date}): {index}")
-        return 0
-    
-    def add_snack(self, snack_name, count):
-        """
-        지정된 이름의 간식을 지정된 개수만큼 추가합니다.
-        새로운 간식인 경우 초기화하고, 기존 간식인 경우 개수를 증가시킵니다.
-        """
-        if snack_name in SNACK_EFFECTS: 
-            self.snack_counts[snack_name] = self.snack_counts.get(snack_name, 0) + count
-            print(f"'{snack_name}' {count}개 획득! 현재 {snack_name} 개수: {self.snack_counts[snack_name]}")
-            return True
-        print(f"알 수 없는 간식 종류여서 추가할 수 없습니다: {snack_name}")
-        return False
+def load_data():
+    """
+    파일에서 저장된 데이터를 불러옵니다.
+    저장된 파일이 없거나 오류 발생 시 초기값을 반환합니다.
+    Returns:
+        tuple: (pet_data, daily_todos, snack_counts, historical_pets)
+    """
+    if os.path.exists(DATA_FILE_NAME):
+        try:
+            with open(DATA_FILE_NAME, 'rb') as f: 
+                loaded_data = pickle.load(f)
+            print(f"데이터를 '{DATA_FILE_NAME}'에서 성공적으로 불러왔습니다.")
+            
+            # 기존 형식의 데이터와 호환성 유지 로직 (새로 추가된 항목들에 대한 기본값 설정)
+            if 'todo_list' in loaded_data: 
+                today = datetime.date.today()
+                loaded_data['daily_todos'] = {today: loaded_data['todo_list']}
+                del loaded_data['todo_list'] 
+                print("이전 형식의 할 일 데이터를 현재 날짜로 변환하여 로드했습니다.")
+            if 'daily_todos' not in loaded_data: 
+                loaded_data['daily_todos'] = {}
+            if 'historical_pets' not in loaded_data: 
+                loaded_data['historical_pets'] = [] 
+            if 'snack_counts' not in loaded_data: 
+                loaded_data['snack_counts'] = {}
 
 
-    def use_snack(self, snack_name):
-        if snack_name in self.snack_counts and self.snack_counts[snack_name] > 0:
-            self.snack_counts[snack_name] -= 1
-            effect = SNACK_EFFECTS[snack_name]
-            print(f"'{snack_name}' 1개 사용! 현재 {snack_name} 개수: {self.snack_counts[snack_name]}, 효과: {effect}")
-            return effect
-        print(f"'{snack_name}' 간식이 없거나 부족합니다.")
-        return None
-
-    def get_current_date_todos(self):
-        return self.daily_todos.get(self.current_date, [])
-    
-    def get_daily_todos_data(self):
-        return self.daily_todos
-
-    def get_current_snack_counts(self):
-        return self.snack_counts
-    
-    def get_current_date(self):
-        return self.current_date
+            if all(key in loaded_data for key in ['pet', 'daily_todos', 'snack_counts', 'historical_pets']):
+                return loaded_data['pet'], loaded_data['daily_todos'], loaded_data['snack_counts'], loaded_data['historical_pets']
+            else:
+                print("저장된 파일의 형식이 올바르지 않아 초기 데이터를 반환합니다.")
+                return None, {}, {}, [] 
+        except Exception as e:
+            print(f"데이터 불러오기 중 오류 발생 또는 파일 손상: {e}")
+            return None, {}, {}, [] 
+    else:
+        print(f"'{DATA_FILE_NAME}' 파일이 존재하지 않아 초기 데이터를 반환합니다.")
+        return None, {}, {}, [] 
