@@ -90,6 +90,9 @@ SOUND_EFFECT_SNACK_GIVE = "snack_eat.wav"
 SOUND_EFFECT_PET_LEVEL_UP = "level_up.wav"    
 SOUND_EFFECT_PET_REBIRTH = "rebirth.wav"      
 
+# ⭐ BGM 파일 정의 ⭐
+BGM_FILE = "bgm.mp3" # BGM 파일 이름 (MP3, WAV 등 지원)
+BGM_VOLUME = 0.3 # BGM 볼륨 (0.0 ~ 1.0 사이, 너무 크면 집중하기 어려울 수 있어요!)
 
 # --- [9] 개발/디버깅 설정 ---
-DEBUG_MODE = True 
+DEBUG_MODE = True
