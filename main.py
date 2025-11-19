@@ -25,11 +25,11 @@ class PetDoListApp:
         self.todo_manager = None
         self.historical_pets = [] # ⭐ 새로 추가: 과거 펫 기록 리스트 초기화
 
-        # --- 데이터 초기화 및 펫 환생 체크 ---
-        self._pre_gui_setup() 
-        
         # --- GUI 인스턴스 생성 ---
         self.gui = PetDoListGUI(master, self) # 이제 gui가 app_logic(self)를 통해 historical_pets에 접근할 수 있습니다.
+        
+        # --- 데이터 초기화 및 펫 환생 체크 ---
+        self._pre_gui_setup() 
 
         # --- 초기 GUI 상태 업데이트 ---
         self.gui.update_gui_with_pet_data()
