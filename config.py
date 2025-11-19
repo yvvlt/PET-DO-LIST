@@ -59,10 +59,19 @@ PET_RESET_INTERVAL_DAYS = 7 # 펫 환생 주기 (7일)
 
 # --- [6] Tkinter GUI 기본 설정 ---
 WINDOW_WIDTH = 1000 
-WINDOW_HEIGHT = 800 # <-- 창 크기 문제 해결을 위해 이 값을 900으로 높였습니다!
+WINDOW_HEIGHT = 800 
 BG_COLOR = "#e0e0e0" # 연한 회색 배경
-PRIMARY_COLOR = "#7f0aed" # 보라색 계열 (버튼, 제목 등에 사용)
-ACCENT_COLOR = "#434fef" # 주황-분홍 계열 (강조 색상)
+SECONDARY_TEXT_COLOR = "#471B1B" # 진한 회색 (거의 검정) 또는 #1a5276 (어두운 파랑) 등 선택 가능
+PRIMARY_COLOR = "#fec8b3" # 보라색 계열 (버튼, 제목 등에 사용)
+TEXT_BG_COLOR = "#d48d6f"
+ACCENT_COLOR = "#674334" # 주황-분홍 계열 (강조 색상)
+
+# ⭐⭐⭐ 여기에 폰트 설정 추가했습니다! ⭐⭐⭐
+MAIN_FONT_FAMILY = "맑은 고딕" # 또는 "나눔고딕", "Arial" 등 원하는 폰트 이름으로 변경 가능
+HEADING_FONT_SIZE_LARGE = 18 # 제목용 큰 글씨 크기 (예: "오늘 할 일", "간식 인벤토리")
+HEADING_FONT_SIZE_MEDIUM = 14 # 중간 제목용 글씨 크기 (예: 현재 날짜, 펫 종류)
+BODY_FONT_SIZE = 12          # 본문 및 리스트박스 글씨 크기
+BUTTON_FONT_SIZE = 10        # 버튼 글씨 크기
 
 
 # --- [7] 로그 파일 설정 (미사용) ---

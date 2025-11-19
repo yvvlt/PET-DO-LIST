@@ -56,12 +56,13 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
 
 # === 과거 펫 기록 보기 다이얼로그 클래스 ===
 class HistoricalPetViewerDialog(tk.Toplevel):
-    def __init__(self, parent, historical_pets, pet_image_loader_func, title="펫 기록 보기"):
+    def __init__(self, parent, historical_pets, pet_image_loader_func, app_logic, title="펫 기록 보기"): # ⭐ app_logic 인자 추가 ⭐
         super().__init__(parent)
         self.transient(parent)
         self.grab_set()
         self.title(title)
         self.pet_image_loader_func = pet_image_loader_func 
+        self.app_logic = app_logic # ⭐ app_logic 저장 ⭐
 
         dialog_width = 500
         dialog_height = 600
@@ -74,7 +75,7 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         self.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
         self.resizable(False, True) 
 
-        tk.Label(self, text="🌟 나의 펫 성장 기록 🌟", font=("Arial", 18, "bold"), pady=10, fg=config.PRIMARY_COLOR).pack()
+        tk.Label(self, text="🌟 나의 펫 성장 기록 🌟", font=("Arial", 18, "bold"), pady=10, fg=config.ACCENT_COLOR).pack()
 
         self.canvas = tk.Canvas(self, borderwidth=0, background=config.BG_COLOR)
         self.record_frame = tk.Frame(self.canvas, background=config.BG_COLOR)
@@ -90,12 +91,8 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         self.canvas.bind('<Enter>', self._bound_to_mousewheel)
         self.canvas.bind('<Leave>', self._unbound_to_mousewheel)
 
-
-        if not historical_pets:
-            tk.Label(self.record_frame, text="아직 저장된 펫 기록이 없습니다.", font=("Arial", 12), fg="gray", bg=config.BG_COLOR).pack(pady=20)
-        else:
-            for record in reversed(historical_pets):
-                self._create_record_entry(record)
+        # ⭐ 기록 디스플레이를 초기화하고 빌드하는 새로운 메서드 호출 ⭐
+        self._build_records_display()
 
         self.wait_window(self)
 
@@ -110,9 +107,25 @@ class HistoricalPetViewerDialog(tk.Toplevel):
 
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-            
 
-    def _create_record_entry(self, record):
+    def _build_records_display(self):
+        # 기존 기록들을 모두 지웁니다.
+        for widget in self.record_frame.winfo_children():
+            widget.destroy()
+
+        historical_pets = self.app_logic.historical_pets # ⭐ app_logic을 통해 최신 기록 가져옴 ⭐
+        if not historical_pets:
+            tk.Label(self.record_frame, text="아직 저장된 펫 기록이 없습니다.", font=("Arial", 12), fg="gray", bg=config.BG_COLOR).pack(pady=20)
+        else:
+            # ⭐ 최신 기록이 위로 오도록 역순으로 반복 (하지만 index는 원본 리스트 기준) ⭐
+            # list를 역순으로 가져와서 enumerate하는 대신, 인덱스를 역순으로 반복하여 원래 인덱스를 사용
+            for i in range(len(historical_pets) -1, -1, -1):
+                record = historical_pets[i]
+                self._create_record_entry(record, i) # ⭐ index 인자 추가 ⭐
+        
+        self.on_frame_configure(None) # 화면 갱신 (스크롤바 등)  
+
+    def _create_record_entry(self, record, index): # ⭐ index 인자 추가 ⭐
         entry_frame = tk.Frame(self.record_frame, bd=2, relief=tk.GROOVE, padx=10, pady=10, bg="white")
         entry_frame.pack(fill=tk.X, padx=5, pady=5)
 
@@ -132,6 +145,24 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         info_label = tk.Label(entry_frame, text=info_text, justify=tk.LEFT, font=("Arial", 10), bg="white")
         info_label.pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=True)
 
+        # ⭐⭐ 삭제 버튼 추가 ⭐⭐
+        # lambda 함수로 현재 인덱스(idx=index)를 캡처하여 _delete_record에 전달
+        delete_button = tk.Button(entry_frame, text="삭제", 
+                                  command=lambda idx=index: self._delete_record(idx), 
+                                  font=(config.MAIN_FONT_FAMILY, 9), bg="red", fg="white")
+        delete_button.pack(side=tk.RIGHT, padx=5, pady=5) # 오른쪽으로 배치
+
+
+    # ⭐⭐ 삭제 버튼 클릭 시 호출될 메서드 추가 ⭐⭐
+    def _delete_record(self, index):
+        if messagebox.askyesno("기록 삭제", "정말 이 펫의 기록을 삭제하시겠습니까?", parent=self):
+            # main.py의 app_logic에 있는 삭제 메서드를 호출
+            if self.app_logic.delete_historical_pet_record(index):
+                # 삭제 성공 후, 화면을 갱신합니다.
+                self._build_records_display()
+            else:
+                messagebox.showerror("오류", "기록 삭제에 실패했습니다.", parent=self)
+
 
 class PetDoListGUI:
     def __init__(self, master, app_logic):
@@ -147,7 +178,7 @@ class PetDoListGUI:
         
         self._create_widgets() 
         self._setup_layout()   
-        self.update_gui_with_pet_data() 
+        
 
     def _create_widgets(self):
         """GUI에 필요한 위젯들을 생성합니다."""
@@ -155,16 +186,16 @@ class PetDoListGUI:
         # --- 1. 좌측 패널 (펫 정보 및 이미지) ---
         self.left_panel = tk.Frame(self.master, bg=config.PRIMARY_COLOR, bd=5, relief=tk.RIDGE)
         
-        self.pet_name_label = tk.Label(self.left_panel, text="이름: {펫 이름}", font=("Arial", 20, "bold"), bg=config.PRIMARY_COLOR, fg="white")
+        self.pet_name_label = tk.Label(self.left_panel, text="이름: {펫 이름}", font=("Arial", 20, "bold"), bg=config.PRIMARY_COLOR, fg=config.SECONDARY_TEXT_COLOR)
         self.pet_canvas = tk.Canvas(self.left_panel, width=300, height=300, bg=config.PRIMARY_COLOR, highlightthickness=0)
         self.pet_photo_label = tk.Label(self.pet_canvas, bg=config.PRIMARY_COLOR) 
-        self.pet_species_level_label = tk.Label(self.left_panel, text="종류: {펫 종류} / Lv. {펫 레벨}", font=("Arial", 14), bg=config.PRIMARY_COLOR, fg="white")
-        self.exp_label = tk.Label(self.left_panel, text="EXP: --/--", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white")
+        self.pet_species_level_label = tk.Label(self.left_panel, text="종류: {펫 종류} / Lv. {펫 레벨}", font=("Arial", 14), bg=config.TEXT_BG_COLOR, fg="white")
+        self.exp_label = tk.Label(self.left_panel, text="EXP: --/--", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg=config.SECONDARY_TEXT_COLOR)
         
-        self.happiness_label = tk.Label(self.left_panel, text="행복도", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
+        self.happiness_label = tk.Label(self.left_panel, text="행복도", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg=config.SECONDARY_TEXT_COLOR, bd=0, highlightthickness=0)
         self.happiness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate") 
 
-        self.fullness_label = tk.Label(self.left_panel, text="포만감", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg="white", bd=0, highlightthickness=0)
+        self.fullness_label = tk.Label(self.left_panel, text="포만감", font=("Arial", 12), bg=config.PRIMARY_COLOR, fg=config.SECONDARY_TEXT_COLOR, bd=0, highlightthickness=0)
         self.fullness_bar = ttk.Progressbar(self.left_panel, orient="horizontal", length=250, mode="determinate") 
         
         self.spacer_frame = tk.Frame(self.left_panel, bg=config.PRIMARY_COLOR)
@@ -183,11 +214,11 @@ class PetDoListGUI:
         self.right_panel = tk.Frame(self.master, bg=config.BG_COLOR, bd=5, relief=tk.RIDGE)
         
         self.date_nav_frame = tk.Frame(self.right_panel, bg=config.BG_COLOR)
+        self.current_date_label = tk.Label(self.date_nav_frame, text="----년 --월 --일", font=("Arial", 14, "bold"), bg=config.BG_COLOR, fg=config.SECONDARY_TEXT_COLOR)
         self.prev_day_button = tk.Button(self.date_nav_frame, text="◀ 이전 날짜", command=lambda: self.app_logic.change_date_logic(-1), font=("Arial", 10), bg=config.PRIMARY_COLOR, fg="white")
-        self.current_date_label = tk.Label(self.date_nav_frame, text="----년 --월 --일", font=("Arial", 14, "bold"), bg=config.BG_COLOR, fg=config.PRIMARY_COLOR)
         self.next_day_button = tk.Button(self.date_nav_frame, text="다음 날짜 ▶", command=lambda: self.app_logic.change_date_logic(1), font=("Arial", 10), bg=config.PRIMARY_COLOR, fg="white")
         
-        self.todo_label = tk.Label(self.right_panel, text="오늘 할 일", font=("Arial", 18, "bold"), bg=config.BG_COLOR, fg=config.PRIMARY_COLOR)
+        self.todo_label = tk.Label(self.right_panel, text="오늘 할 일", font=("Arial", 18, "bold"), bg=config.BG_COLOR, fg=config.SECONDARY_TEXT_COLOR)
         self.todo_listbox = tk.Listbox(self.right_panel, height=10, font=("Arial", 12), selectmode=tk.SINGLE, bd=2, relief=tk.GROOVE)
         self.todo_scrollbar = tk.Scrollbar(self.right_panel, orient="vertical", command=self.todo_listbox.yview)
         self.todo_listbox.config(yscrollcommand=self.todo_scrollbar.set)
@@ -197,8 +228,8 @@ class PetDoListGUI:
         self.complete_todo_button = tk.Button(self.right_panel, text="할 일 완료", command=self.complete_selected_todo, font=("Arial", 10, "bold"), bg=config.PRIMARY_COLOR, fg="white")
         self.remove_todo_button = tk.Button(self.right_panel, text="할 일 삭제", command=self.remove_selected_todo, font=("Arial", 10, "bold"), bg="red", fg="white")
 
-        self.snack_inventory_label = tk.Label(self.right_panel, text="간식 인벤토리", font=("Arial", 18, "bold"), bg=config.BG_COLOR, fg=config.PRIMARY_COLOR)
-        self.snack_list_label = tk.Label(self.right_panel, text="기본 간식: {X}개, 고급 간식: {Y}개", font=("Arial", 12), bg=config.BG_COLOR)
+        self.snack_inventory_label = tk.Label(self.right_panel, text="간식 인벤토리", font=("Arial", 18, "bold"), bg=config.BG_COLOR, fg=config.SECONDARY_TEXT_COLOR)
+        self.snack_list_label = tk.Label(self.right_panel, text="기본 간식: {X}개, 고급 간식: {Y}개", font=("Arial", 12), bg=config.BG_COLOR, fg=config.SECONDARY_TEXT_COLOR)
 
 
     def _setup_layout(self):
@@ -385,8 +416,11 @@ class PetDoListGUI:
         return dialog.result
 
     def show_pet_history(self):
+        """펫 기록 보기 다이얼로그를 표시합니다."""
+        # ⭐ app_logic을 HistoricalPetViewerDialog에 인자로 전달 ⭐
         history_dialog = HistoricalPetViewerDialog(
             self.master, 
             self.app_logic.historical_pets, 
-            self.load_pet_image 
+            self.load_pet_image,
+            self.app_logic # ⭐ self.app_logic 추가 전달 ⭐
         )

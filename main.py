@@ -35,6 +35,19 @@ class PetDoListApp:
         self.gui.update_gui_with_pet_data()
 
 
+        # ⭐⭐ 펫 기록 삭제 메서드 추가 ⭐⭐
+    def delete_historical_pet_record(self, index):
+        """
+        주어진 인덱스에 해당하는 과거 펫 기록을 삭제하고 데이터를 저장합니다.
+        """
+        if 0 <= index < len(self.historical_pets):
+            deleted_record = self.historical_pets.pop(index) # 리스트에서 해당 인덱스의 기록을 삭제
+            print(f"과거 펫 기록 삭제됨: {deleted_record}")
+            self.save_all_data() # 변경된 기록을 파일에 저장
+            return True
+        return False
+
+
     def _pre_gui_setup(self):
         """GUI를 생성하기 전에 데이터 로드, 펫 초기화, 환생 체크를 수행합니다."""
         # ⭐ data_manager.load_data()에서 historical_pets도 함께 로드합니다.
@@ -115,6 +128,8 @@ class PetDoListApp:
         
         # ⭐ 현재 펫의 기록을 남깁니다. (새로운 펫이 생성되기 전에 호출)
         self._record_current_pet_history()
+
+        #self.historical_pets = [] #강제환생 시 펫 기록 초기화. 이건 실험용. 실행시에는 주석처리
 
         # 새 펫 이름 입력
         new_pet_name = simpledialog.askstring("펫 환생!", f"이전 펫 '{self.pet.name}'이 환생했습니다! 새로운 펫의 이름을 지어주세요:", parent=self.master)
