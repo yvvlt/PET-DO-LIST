@@ -38,14 +38,11 @@ INITIAL_SNACK_COUNTS = { # 시작 시 주어지는 간식 개수
     "고급 간식": 1
 }
 
-# 간식별 효과 (행복도, 포만감) 및 아이콘 파일명 (요청에 따라 값 변경)
+# 간식별 효과 (행복도, 포만감) 및 아이콘 파일명
 SNACK_EFFECTS = {
-    "기본 간식": {"happiness": 20, "fullness": 20, "icon": "basic_snack_icon.png"}, # ⭐ 변경됨
-    "고급 간식": {"happiness": 50, "fullness": 50, "icon": "premium_snack_icon.png"} # ⭐ 변경됨
+    "기본 간식": {"happiness": 20, "fullness": 20, "icon": "basic_snack_icon.png"}, 
+    "고급 간식": {"happiness": 50, "fullness": 50, "icon": "premium_snack_icon.png"} 
 }
-# 이전에 개별 설정된 값은 이제 SNACK_EFFECTS 안에 있습니다.
-# HAPPINESS_PER_SNACK = 10 
-# FULLNESS_PER_SNACK = 10   
 
 
 # --- [4] 펫 환생(리셋) 관련 설정 ---
@@ -64,10 +61,10 @@ WINDOW_HEIGHT = 800
 BG_COLOR = "#e0e0e0" # 연한 회색 배경
 SECONDARY_TEXT_COLOR = "#471B1B" # 진한 회색
 PRIMARY_COLOR = "#fec8b3" # 연한 오렌지/피치 계열 (버튼, 제목 등에 사용)
-TEXT_BG_COLOR = "#d48d6f" # 사용되지 않는 것 같아 일단 유지
+TEXT_BG_COLOR = "#d48d6f" 
 ACCENT_COLOR = "#674334" # 주황-갈색 계열 (강조 색상)
 
-# ⭐⭐ 폰트 설정 ⭐⭐
+# ⭐ 폰트 설정 ⭐
 MAIN_FONT_FAMILY = "맑은 고딕" 
 HEADING_FONT_SIZE_LARGE = 18 
 HEADING_FONT_SIZE_MEDIUM = 14 
@@ -84,10 +81,10 @@ RESOURCES_PATH = "resources/" # 모든 리소스가 담길 기본 폴더
 PET_IMAGES_SUBFOLDER = "pet_images/"  # 펫 이미지 파일들이 들어갈 resources 하위 폴더
 ITEM_IMAGES_SUBFOLDER = "item_images/" # 아이템/간식 이미지 파일들이 들어갈 resources 하위 폴더
 ETC_SUBFOLDER = "etc/"               # 기타 이미지들이 들어갈 resources 하위 폴더
-# ⭐⭐ 사운드 리소스 경로 추가 ⭐⭐
+# ⭐ 사운드 리소스 경로 추가 ⭐
 SOUNDS_SUBFOLDER = "sounds"
 
-# ⭐⭐ 효과음 파일 이름 정의 (실제 파일 이름에 맞춰 수정해주세요!) ⭐⭐
+# ⭐ 효과음 파일 이름 정의 (실제 파일 이름에 맞춰 수정해주세요!) ⭐
 SOUND_EFFECT_TODO_COMPLETE = "todo_complete.wav" 
 SOUND_EFFECT_SNACK_GIVE = "snack_eat.wav"     
 SOUND_EFFECT_PET_LEVEL_UP = "level_up.wav"    
