@@ -7,7 +7,6 @@
 import tkinter as tk            # Tkinter GUI 라이브러리.
 from tkinter import simpledialog, messagebox # 사용자 입력 다이얼로그, 알림창.
 import datetime                 # 날짜/시간 객체.
-import random                   # (현재 코드에서 직접 사용되진 않음, 추후 확장용)
 import os                       # 파일 시스템 경로 처리 (사운드 파일 경로 등).
 import pygame.mixer as mixer    # 배경 음악(BGM) 및 효과음 재생 모듈 (playsound 대체).
 
@@ -131,12 +130,17 @@ class PetDoListApp:
         today = datetime.date.today()
         if self.pet: 
             days_since_reset = (today - self.pet.last_reset_date).days # 마지막 리셋일로부터 지난 일수.
-            is_reset_day_and_time = (today.weekday() == config.WEEKLY_RESET_DAY and datetime.datetime.now().hour >= config.RESET_TIME_HOUR)
+            is_reset_day_and_time = (today.weekday() == config.WEEKLY_RESET_DAY and 
+                                     datetime.datetime.now().hour >= config.RESET_TIME_HOUR)
 
-            if today != self.pet.last_reset_date and is_reset_day_and_time: # 오늘 날짜가 마지막 리셋일과 다르고, 환생 요일/시간 조건 충족 시.
-                if days_since_reset >= config.PET_RESET_INTERVAL_DAYS or self.pet.last_reset_date.weekday() != config.WEEKLY_RESET_DAY: # 환생 주기 또는 요일 조건 충족 시.
+            if today != self.pet.last_reset_date and is_reset_day_and_time: # 오늘 날짜가 마지막 리셋일과 다르고, 
+                                                                            #환생 요일/시간 조건 충족 시.
+                if days_since_reset >= config.PET_RESET_INTERVAL_DAYS or self.pet.last_reset_date.weekday() != config.WEEKLY_RESET_DAY: 
+                        # 환생 주기 또는 요일 조건 충족 시.
                         print("펫 환생 조건 충족!")
-                        if messagebox.askyesno("펫 환생 알림", f"이번 주 ({self.pet.last_reset_date} ~ {today})의 여정이 끝났습니다!\n새로운 펫으로 환생하시겠어요?", parent=self.master):
+                        if messagebox.askyesno("펫 환생 알림", 
+                                               f"이번 주 ({self.pet.last_reset_date} ~ {today})의 여정이 끝났습니다!\n새로운 펫으로 환생하시겠어요?",
+                                               parent=self.master):
                             self.perform_rebirth_via_dialog() # 사용자 동의 시 환생 진행.
                         else:
                             messagebox.showinfo("알림", "이번 주 펫과 계속 여정을 함께합니다!", parent=self.master)
@@ -235,7 +239,8 @@ class PetDoListApp:
                 self.todo_manager.add_snack("고급 간식", 1) # 고급 간식 1개 추가.
                 self.pet.has_been_rewarded_for_full_gauges = True # 보상 완료 플래그 설정.
                 
-                messagebox.showinfo("특별 보상!", f"'{self.pet.name}'(이)가 행복하고 포만감이 가득찼습니다!\n축하합니다! 고급 간식 1개를 획득했습니다!", parent=self.master)
+                messagebox.showinfo("특별 보상!", f"'{self.pet.name}'(이)가 행복하고 포만감이 가득찼습니다!\n축하합니다! 고급 간식 1개를 획득했습니다!", 
+                                    parent=self.master)
                 self.play_sound("pet_level_up") # 레벨업 효과음 재생 (보상 알림).
                 self.gui.update_gui_with_pet_data() # GUI 업데이트.
                 self.save_all_data() # 데이터 저장.
