@@ -92,7 +92,14 @@ SOUND_EFFECT_PET_REBIRTH = "rebirth.wav"
 
 # ⭐ BGM 파일 정의 ⭐
 BGM_FILE = "bgm.mp3" # BGM 파일 이름 (MP3, WAV 등 지원)
-BGM_VOLUME = 0.3 # BGM 볼륨 (0.0 ~ 1.0 사이, 너무 크면 집중하기 어려울 수 있어요!)
+BGM_VOLUME = 1.0 # BGM 볼륨 (0.0 ~ 1.0 사이, 너무 크면 집중하기 어려울 수 있어요!)
+
+# ⭐ 효과음 볼륨 정의 (0.0 ~ 1.0 사이) ⭐
+SFX_VOLUME_TODO_COMPLETE = 0.3
+SFX_VOLUME_SNACK_GIVE = 0.2
+SFX_VOLUME_PET_LEVEL_UP = 0.3
+SFX_VOLUME_PET_REBIRTH = 0.3
+
 
 # --- [9] 개발/디버깅 설정 ---
 DEBUG_MODE = True

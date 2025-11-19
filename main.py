@@ -5,8 +5,8 @@ from tkinter import simpledialog, messagebox
 import datetime
 import random 
 import os 
-from playsound import playsound 
-import pygame.mixer as mixer # ⭐ BGM 재생을 위해 pygame.mixer 임포트 ⭐
+# from playsound import playsound # playsound는 더 이상 사용하지 않습니다.
+import pygame.mixer as mixer 
 
 import config
 from pet_manager import Pet
@@ -26,26 +26,53 @@ class PetDoListApp:
         self.pet = None
         self.todo_manager = None
         self.historical_pets = [] 
+        self.sfx_sounds = {} # ⭐ 효과음 객체를 저장할 딕셔너리 추가 ⭐
 
         self.gui = PetDoListGUI(master, self) 
         
         self._pre_gui_setup() 
 
         # ⭐ BGM 초기화 및 재생 로직 ⭐
-        mixer.init() # Pygame 믹서 초기화 (처음에 한 번만 호출)
+        mixer.init() # Pygame 믹서 초기화 (한 번만 호출)
         bgm_path = os.path.join(config.RESOURCES_PATH, config.SOUNDS_SUBFOLDER, config.BGM_FILE)
         if os.path.exists(bgm_path):
             try:
-                mixer.music.load(bgm_path) # BGM 파일 로드
-                mixer.music.set_volume(config.BGM_VOLUME) # 볼륨 설정 (config.py에서 설정)
-                mixer.music.play(loops=-1) # -1은 무한 반복 재생을 의미합니다!
+                mixer.music.load(bgm_path) 
+                mixer.music.set_volume(config.BGM_VOLUME) 
+                mixer.music.play(loops=-1) 
                 print(f"BGM '{config.BGM_FILE}' 재생 시작.")
             except Exception as e:
                 print(f"BGM 재생 중 오류 발생: {e}")
         else:
             print(f"BGM 파일 '{bgm_path}'을 찾을 수 없어 재생할 수 없습니다. config.BGM_FILE과 파일 경로를 확인해주세요.")
 
+        # ⭐ 모든 효과음 미리 로드 및 볼륨 설정 ⭐
+        self._load_sound_effects()
+
         self.gui.update_gui_with_pet_data() 
+
+    def _load_sound_effects(self):
+        """모든 효과음 파일을 로드하고 볼륨을 설정하여 sfx_sounds 딕셔너리에 저장합니다."""
+        sfx_list = {
+            "todo_complete": (config.SOUND_EFFECT_TODO_COMPLETE, config.SFX_VOLUME_TODO_COMPLETE),
+            "snack_give": (config.SOUND_EFFECT_SNACK_GIVE, config.SFX_VOLUME_SNACK_GIVE),
+            "pet_level_up": (config.SOUND_EFFECT_PET_LEVEL_UP, config.SFX_VOLUME_PET_LEVEL_UP),
+            "pet_rebirth": (config.SOUND_EFFECT_PET_REBIRTH, config.SFX_VOLUME_PET_REBIRTH),
+        }
+
+        for key, (filename, volume) in sfx_list.items():
+            sound_path = os.path.join(config.RESOURCES_PATH, config.SOUNDS_SUBFOLDER, filename)
+            if os.path.exists(sound_path):
+                try:
+                    sound_obj = mixer.Sound(sound_path)
+                    sound_obj.set_volume(volume)
+                    self.sfx_sounds[key] = sound_obj
+                    print(f"효과음 '{filename}' 로드 완료. 볼륨: {volume}")
+                except Exception as e:
+                    print(f"효과음 '{filename}' 로드 중 오류 발생: {e}")
+            else:
+                print(f"효과음 파일 '{sound_path}'을 찾을 수 없어 로드할 수 없습니다.")
+
 
     def _pre_gui_setup(self):
         """GUI를 생성하기 전에 데이터 로드, 펫 초기화, 환생 체크를 수행합니다."""
@@ -88,11 +115,11 @@ class PetDoListApp:
 
             if today != self.pet.last_reset_date and is_reset_day_and_time:
                 if days_since_reset >= config.PET_RESET_INTERVAL_DAYS or self.pet.last_reset_date.weekday() != config.WEEKLY_RESET_DAY: 
-                    print("펫 환생 조건 충족! 새로운 펫을 맞이합니다.")
-                    if messagebox.askyesno("펫 환생 알림", f"이번 주 ({self.pet.last_reset_date} ~ {today})의 여정이 끝났습니다!\n새로운 펫으로 환생하시겠어요?", parent=self.master):
-                        self.perform_rebirth_via_dialog()
-                    else:
-                        messagebox.showinfo("알림", "이번 주 펫과 계속 여정을 함께합니다!", parent=self.master)
+                        print("펫 환생 조건 충족! 새로운 펫을 맞이합니다.")
+                        if messagebox.askyesno("펫 환생 알림", f"이번 주 ({self.pet.last_reset_date} ~ {today})의 여정이 끝났습니다!\n새로운 펫으로 환생하시겠어요?", parent=self.master):
+                            self.perform_rebirth_via_dialog()
+                        else:
+                            messagebox.showinfo("알림", "이번 주 펫과 계속 여정을 함께합니다!", parent=self.master)
 
     def _record_current_pet_history(self):
         """현재 펫의 최종 상태를 역사 기록에 추가합니다."""
@@ -130,14 +157,13 @@ class PetDoListApp:
         messagebox.showinfo("펫 환생 완료!", f"'{self.pet.name}' ({self.pet.species})으로 새롭게 태어났습니다! 환영해주세요!", parent=self.master)
         self.gui.update_gui_with_pet_data() 
         self.save_all_data()
-        self.play_sound(config.SOUND_EFFECT_PET_REBIRTH) 
+        self.play_sound("pet_rebirth") # ⭐ 재생할 효과음의 '키'를 전달 ⭐
 
     def on_closing(self):
         """애플리케이션 종료 시 데이터를 저장하고 윈도우를 닫습니다."""
         self.save_all_data()
-        # ⭐ BGM 믹서 종료 로직 ⭐
-        mixer.music.stop() # BGM 정지
-        mixer.quit()       # Pygame 믹서 종료 (선택 사항이지만 깔끔합니다)
+        mixer.music.stop() 
+        mixer.quit()       
         self.master.destroy()
 
     def save_all_data(self):
@@ -148,19 +174,21 @@ class PetDoListApp:
         else:
             print("저장할 데이터가 없어 저장을 건너뛰는 작업을 수행하고 있어요.")
 
-    def play_sound(self, sound_file_name):
+    # ⭐ pygame.mixer.Sound 객체를 재생하도록 play_sound 함수 수정 ⭐
+    def play_sound(self, sound_key):
         """
-        지정된 효과음 파일을 재생합니다.
-        경로: resources/sounds/sound_file_name
+        미리 로드된 효과음 객체를 재생합니다.
+        Args:
+            sound_key (str): _load_sound_effects에 정의된 사운드 키.
         """
-        sound_path = os.path.join(config.RESOURCES_PATH, config.SOUNDS_SUBFOLDER, sound_file_name)
-        if os.path.exists(sound_path):
+        sound_obj = self.sfx_sounds.get(sound_key)
+        if sound_obj:
             try:
-                playsound(sound_path) 
+                sound_obj.play()
             except Exception as e:
-                print(f"사운드 재생 실패 ({sound_path}): {e}")
+                print(f"효과음 '{sound_key}' 재생 중 오류 발생: {e}")
         else:
-            print(f"사운드 파일 '{sound_path}'을 찾을 수 없습니다.")
+            print(f"효과음 키 '{sound_key}'에 해당하는 사운드 객체를 찾을 수 없습니다.")
             
     def _check_and_reward_full_gauges(self):
         """
@@ -180,13 +208,13 @@ class PetDoListApp:
                 self.pet.has_been_rewarded_for_full_gauges = True 
                 
                 messagebox.showinfo("특별 보상!", f"'{self.pet.name}'(이)가 행복하고 포만감이 가득찼습니다!\n축하합니다! 고급 간식 1개를 획득했습니다!", parent=self.master)
-                self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP) 
+                self.play_sound("pet_level_up") # ⭐ 재생할 효과음의 '키'를 전달 ⭐
                 self.gui.update_gui_with_pet_data()
                 self.save_all_data()
                 print("고급 간식 1개 지급!")
         else:
             self.pet.has_been_rewarded_for_full_gauges = False
-            
+                
     # --- GUI 이벤트 핸들러 (PetDoListGUI에서 호출될 실제 로직) ---
     def add_todo_logic(self, todo_text):
         if self.todo_manager.add_todo(todo_text): 
@@ -206,10 +234,10 @@ class PetDoListApp:
             if snack_reward_count > 0:
                 leveled_up = self.pet.add_exp(amount=config.EXP_PER_TODO_COMPLETE) 
                 
-                self.play_sound(config.SOUND_EFFECT_TODO_COMPLETE) 
+                self.play_sound("todo_complete") # ⭐ 재생할 효과음의 '키'를 전달 ⭐
 
                 if leveled_up:
-                    self.play_sound(config.SOUND_EFFECT_PET_LEVEL_UP) 
+                    self.play_sound("pet_level_up") # ⭐ 재생할 효과음의 '키'를 전달 ⭐
                     messagebox.showinfo("레벨업!", f"'{self.pet.name}'이(가) 레벨 {self.pet.level}로 성장했습니다!", parent=self.master)
 
                 self.gui.update_gui_with_pet_data() 
@@ -240,7 +268,7 @@ class PetDoListApp:
         effect = self.todo_manager.use_snack(snack_name)
         if effect:
             self.pet.give_snack(effect)
-            self.play_sound(config.SOUND_EFFECT_SNACK_GIVE) 
+            self.play_sound("snack_give") # ⭐ 재생할 효과음의 '키'를 전달 ⭐
             self.gui.update_gui_with_pet_data() 
             self.save_all_data() 
             self._check_and_reward_full_gauges() 
