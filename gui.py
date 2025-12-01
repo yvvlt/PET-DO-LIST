@@ -1,7 +1,7 @@
 # gui.py
 
-# 애플리케이션의 사용자 인터페이스(GUI)를 구성하고 관리하는 모듈입니다.
-# Tkinter 위젯을 사용하여 화면을 그리고, main.py의 PetDoListApp과 상호작용합니다.
+# 애플리케이션의 사용자 인터페이스(GUI)를 구성하고 관리하는 모듈
+# Tkinter 위젯을 사용하여 화면을 그리고, main.py의 PetDoListApp과 상호작용
 
 import tkinter as tk      # Tkinter GUI 라이브러리.
 from tkinter import ttk   # Tkinter의 테마 위젯 (예: Progressbar).
@@ -13,7 +13,7 @@ import datetime           # 날짜/시간 객체.
 import config             # 애플리케이션 설정 값 임포트.
 
 # === 펫 종류 선택 모달 다이얼로그 클래스 ===
-# 펫을 생성하거나 환생할 때 사용자에게 펫 종류를 선택하도록 하는 팝업 창입니다.
+# 펫을 생성하거나 환생할 때 사용자에게 펫 종류를 선택하도록 하는 팝업 창
 class PetSpeciesSelectionDialog(tk.Toplevel):
     def __init__(self, parent, species_list, title="펫 종류 선택"):
         super().__init__(parent)
@@ -157,7 +157,7 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         )
         info_label = tk.Label(entry_frame, text=info_text, justify=tk.LEFT, font=(config.MAIN_FONT_FAMILY, 10), bg="white")
         info_label.pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=True)
-        
+
 
         # 기록 삭제 버튼.
         delete_button = tk.Button(entry_frame, text="삭제", 
