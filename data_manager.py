@@ -1,7 +1,7 @@
 # data_manager.py
 
 # 애플리케이션 데이터를 파일에 저장하고 불러오는 모듈.
-# Python 객체를 직렬화(pickle)하여 영속성(persistence)을 제공.
+
 
 import pickle     # 객체 직렬화/역직렬화.
 import os         # 파일 시스템 접근 (경로, 존재 여부 확인).
