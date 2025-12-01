@@ -62,8 +62,8 @@ class PetSpeciesSelectionDialog(tk.Toplevel):
         
 
 # === 과거 펫 기록 보기 다이얼로그 클래스 ===
-# 사용자가 성장시켰던 과거 펫들의 기록을 보여주는 팝업 창입니다.
-# 각 기록에 대한 이미지와 정보, 삭제 버튼을 포함합니다.
+# 사용자가 성장시켰던 과거 펫들의 기록을 보여주는 팝업 창
+# 각 기록에 대한 이미지와 정보, 삭제 버튼을 포함
 class HistoricalPetViewerDialog(tk.Toplevel):
     def __init__(self, parent, historical_pets, pet_image_loader_func, app_logic, title="펫 기록 보기"): 
         super().__init__(parent)
@@ -175,7 +175,7 @@ class HistoricalPetViewerDialog(tk.Toplevel):
 
 
 # === 주 애플리케이션 GUI 클래스 ===
-# Pet-Do-List 앱의 메인 GUI를 생성하고 관리하는 클래스입니다.
+# Pet-Do-List 앱의 메인 GUI를 생성하고 관리하는 클래스
 class PetDoListGUI:
     def __init__(self, master, app_logic):
         self.master = master     # Tkinter 루트(메인) 창.
@@ -311,7 +311,7 @@ class PetDoListGUI:
 
     def load_pet_image(self, image_filename, size=(300, 300)):
         """
-        펫 이미지를 로드하고 캐싱하여 반환합니다. 이미 로드된 이미지는 캐시에서 가져옵니다.
+        펫 이미지를 로드하고 캐싱하여 반환합니다. 이미 로드된 이미지는 캐시에서 가져옴.
         Args:
             image_filename (str): 이미지 파일명.
             size (tuple): 이미지 리사이즈 크기 (너비, 높이).
