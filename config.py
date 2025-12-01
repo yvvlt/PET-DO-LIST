@@ -8,7 +8,7 @@ DATA_FILE_NAME = "pet_do_list_data.pkl"     # 데이터 저장 파일명. (data_
 INITIAL_PET_NAME = "새 친구"                 # 펫 이름 미입력 시 기본값. (main.py, pet_manager.py)
 
 # --- [2] 펫 성장 관련 설정 ---
-PET_SPECIES_LIST = ["사람", "나무", "고양이"] # 선택 가능한 펫 종류 목록. (main.py, pet_manager.py, gui.py)
+PET_SPECIES_LIST = ["사람", "나무"] # 선택 가능한 펫 종류 목록. (main.py, pet_manager.py, gui.py)
 MAX_PET_LEVEL = 7                             # 펫의 최대 레벨. (pet_manager.py)
 
 INITIAL_PET_LEVEL = 1                         # 펫의 초기 레벨. (pet_manager.py)
