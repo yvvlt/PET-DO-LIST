@@ -157,6 +157,7 @@ class HistoricalPetViewerDialog(tk.Toplevel):
         )
         info_label = tk.Label(entry_frame, text=info_text, justify=tk.LEFT, font=(config.MAIN_FONT_FAMILY, 10), bg="white")
         info_label.pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=True)
+        
 
         # 기록 삭제 버튼.
         delete_button = tk.Button(entry_frame, text="삭제", 
