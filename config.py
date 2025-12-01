@@ -87,7 +87,7 @@ SOUND_EFFECT_PET_LEVEL_UP = "level_up.wav"
 SOUND_EFFECT_PET_REBIRTH = "rebirth.wav"      
 
 # BGM 파일 설정. (main.py)
-BGM_FILE = "bgm.mp3" # BGM 파일명 (MP3, WAV 등).
+BGM_FILE = "bgm.mp3" # BGM 파일명
 BGM_VOLUME = 1.0     # BGM 볼륨 (0.0 ~ 1.0).
 
 # 효과음 볼륨 정의 (0.0 ~ 1.0). (main.py)
