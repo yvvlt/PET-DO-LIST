@@ -2,7 +2,6 @@
 
 # 애플리케이션 데이터를 파일에 저장하고 불러오는 모듈.
 
-
 import pickle     # 객체 직렬화/역직렬화.
 import os         # 파일 시스템 접근 (경로, 존재 여부 확인).
 import datetime   # datetime 객체 처리 (이전 데이터 호환성).
