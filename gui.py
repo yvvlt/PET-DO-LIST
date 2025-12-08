@@ -450,7 +450,7 @@ class PetDoListGUI:
 
     def show_pet_history(self):
         """펫 기록 보기 다이얼로그를 표시합니다."""
-        # HistoricalPetViewerDialog를 생성하여 펫 기록을 보여줍니다.
+        # HistoricalPetViewerDialog를 생성하여 펫 기록을 보여줌.
         history_dialog = HistoricalPetViewerDialog(
             self.master, 
             self.app_logic.historical_pets, 
