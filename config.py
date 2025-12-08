@@ -95,6 +95,5 @@ SFX_VOLUME_SNACK_GIVE = 0.1
 SFX_VOLUME_PET_LEVEL_UP = 0.1
 SFX_VOLUME_PET_REBIRTH = 0.1
 
-
 # --- [8] 개발/디버깅 설정 ---
 DEBUG_MODE = True # 디버그 모드 활성화 여부. (print문 출력 등)
