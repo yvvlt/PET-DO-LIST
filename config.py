@@ -1,7 +1,6 @@
 # config.py
 
 import datetime
-
 # --- [1] 애플리케이션 기본 설정 ---
 APP_TITLE = "Pet-Do-List: 환생 펫 투두리스트"  # 애플리케이션 창의 제목. (main.py)
 DATA_FILE_NAME = "pet_do_list_data.pkl"     # 데이터 저장 파일명. (data_manager.py)
