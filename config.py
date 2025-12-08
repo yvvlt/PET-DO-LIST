@@ -44,7 +44,6 @@ SNACK_EFFECTS = {
     "고급 간식": {"happiness": 50, "fullness": 50, "icon": "premium_snack_icon.png"} 
 }
 
-
 # --- [4] 펫 환생(리셋) 관련 설정 ---
 WEEKLY_RESET_DAY = 2    # 펫이 환생할 요일 (월:0, 화:1, 수:2, ... 일:6). (main.py)
 RESET_TIME_HOUR = 3     # 환생 처리 시간 (새벽 3시). (main.py)
